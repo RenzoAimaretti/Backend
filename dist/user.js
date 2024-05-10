@@ -8,4 +8,4 @@ export class Usuario {
         this.id = id;
     }
 }
-//# sourceMappingURL=usuario.js.map
+//# sourceMappingURL=user.js.map
