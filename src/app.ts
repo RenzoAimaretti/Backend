@@ -1,21 +1,11 @@
 import  express  from "express";
-import { Usuario } from "./user/user.js";
+import { userRouter } from "./user/users.routes.js";
 
-
-
-
- /*function sanitizeUsuarioInput(req: Request , res: Response , next:NextFunction) {
-     Req.body.sanitizedInput = {
-        nombre: req.body.nombre,
-        contraseña: req.body.contraseña,
-        amigos: req.body.amigos,
-        listas: req.body.listas,
-        }
-    next()} */
-        
+   
 const app=express()
 app.use(express.json())
 
+app.use('/api/users', userRouter)
 
 
 app.listen(3000,()=>{
@@ -25,6 +15,6 @@ app.listen(3000,()=>{
 
 
 app.use((_,res)=>{
-    res.status(404).send('Not Found')
+    res.status(404).send('Resource Not Found')
 })
 

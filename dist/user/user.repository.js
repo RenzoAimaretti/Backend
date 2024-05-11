@@ -1,4 +1,5 @@
-import { Usuario } from "./user.js";
+import { Usuario } from "./user.entity.js";
+//Esta capa corresponde al acceso a los datos, no a la santitizacion ni validaciones respectivas.
 const users = [
     new Usuario('Miguelazo232', '123456', [], []),
     new Usuario('JuanchOcan4lla1889', '32737', ['joseLepra2006'], []),
@@ -21,6 +22,7 @@ export class UserRepository {
             users[index] = { ...users[index], ...item };
             return users[index];
         }
+        ;
     }
     delete(item) {
         const index = users.findIndex(user => user.id === item.id);
