@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { sanitizeUserInput, findAll, findOne, deleteOne, addOne, updateOne } from "./user.controler.js";
-export const userRouter=Router()
 
-userRouter.get('/',findAll)
+export const userRouter=Router();
 
-userRouter.get('/:id',findOne)
+userRouter.get('/',findAll);
 
-userRouter.post('/',sanitizeUserInput,addOne)
+userRouter.get('/:id',findOne);
 
-userRouter.put('/:id',sanitizeUserInput,updateOne)
+userRouter.post('/',sanitizeUserInput,addOne);
 
-userRouter.patch('/:id',sanitizeUserInput,updateOne)
+userRouter.put('/:id',sanitizeUserInput,updateOne);
 
-userRouter.delete('/:id',deleteOne)
+userRouter.patch('/:id',sanitizeUserInput,updateOne);
+
+userRouter.delete('/:id',deleteOne);

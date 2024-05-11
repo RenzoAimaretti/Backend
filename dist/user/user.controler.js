@@ -1,10 +1,10 @@
 import { UserRepository } from "./user.repository.js";
 import { Usuario } from "./user.entity.js";
-const repository = new UserRepository;
+const repository = new UserRepository();
 function sanitizeUserInput(req, res, next) {
     req.body.sanitizedInput = {
         nombre: req.body.nombre,
-        contraseña: req.body.contraseña,
+        clave: req.body.clave,
         amigos: req.body.amigos,
         listas: req.body.listas,
     };
@@ -35,7 +35,7 @@ function findOne(req, res) {
 //añadir uno nuevo
 function addOne(req, res) {
     const input = req.body.sanitizedInput;
-    const newUser = new Usuario(input.name, input.contraseña, input.amigos, input.listas);
+    const newUser = new Usuario(input.name, input.clave, input.amigos, input.listas);
     const addedUser = repository.add(newUser);
     return res.status(201).send({ Message: 'User created', data: addedUser });
 }
