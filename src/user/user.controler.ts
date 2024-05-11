@@ -15,7 +15,8 @@ function sanitizeUserInput(req: Request , res: Response , next:NextFunction) {
         if(req.body.sanitizedInput[key]===undefined){
             delete req.body.sanitizedInput[key];
         }
-    }); 
+    });
+    next(); 
 };
 function findAll(req: Request,res: Response){
 res.json({data: repository.findAll()});

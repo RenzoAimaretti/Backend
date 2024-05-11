@@ -13,6 +13,7 @@ function sanitizeUserInput(req, res, next) {
             delete req.body.sanitizedInput[key];
         }
     });
+    next();
 }
 ;
 function findAll(req, res) {
