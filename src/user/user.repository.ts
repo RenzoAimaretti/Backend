@@ -1,25 +1,25 @@
 import { Repository	} from "../shared/repository.js";
-import { Usuario } from "./user.entity.js";
+import { User } from "./user.entity.js";
 //Esta capa corresponde al acceso a los datos, no a la santitizacion ni validaciones respectivas.
 const users=[
-    new Usuario('Miguelazo232', '123456',[],[]),
-    new Usuario('JuanchOcan4lla1889', '32737',['joseLepra2006'],[]),
-    new Usuario('joseLepra2006', '456789',['JuanchOcan4lla'],[])]
+    new User('Miguelazo232', '123456',[],[]),
+    new User('JuanchOcan4lla1889', '32737',['joseLepra2006'],[]),
+    new User('joseLepra2006', '456789',['JuanchOcan4lla'],[])]
 
-export class UserRepository implements Repository<Usuario>{
-    public  findAll(): Usuario[] {
+export class UserRepository implements Repository<User>{
+    public  findAll(): User[] {
         return users;
     }
     
-    public findOne(item: { id: string; }): Usuario | undefined {
+    public findOne(item: { id: string; }): User | undefined {
         return users.find((user)=>user.id===item.id);
     }
 
-    public add(item: Usuario): Usuario | undefined {
+    public add(item: User): User | undefined {
         users.push(item);
         return item;
     }
-    public update(item:Usuario): Usuario | undefined {
+    public update(item:User): User | undefined {
         const index= users.findIndex(user=>user.id===item.id)
         if (index!==-1){
             users[index]={...users[index],...item}
@@ -27,7 +27,7 @@ export class UserRepository implements Repository<Usuario>{
         };
         
     }
-    public delete(item: { id: string;}): Usuario | undefined{
+    public delete(item: { id: string;}): User | undefined{
         const index = users.findIndex(user=>user.id===item.id);
         if (index!==-1){
             const deletedUser = users[index];

@@ -1,10 +1,10 @@
 import crypto from 'node:crypto';
-export class Usuario {
-    constructor(nombre, clave, amigos, listas, id = crypto.randomUUID()) {
-        this.nombre = nombre;
-        this.clave = clave;
-        this.amigos = amigos;
-        this.listas = listas;
+export class User {
+    constructor(name, password, friends, list, id = crypto.randomUUID()) {
+        this.name = name;
+        this.password = password;
+        this.friends = friends;
+        this.list = list;
         this.id = id;
     }
 }

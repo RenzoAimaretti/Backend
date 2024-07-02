@@ -1,9 +1,9 @@
-import { Usuario } from "./user.entity.js";
+import { User } from "./user.entity.js";
 //Esta capa corresponde al acceso a los datos, no a la santitizacion ni validaciones respectivas.
 const users = [
-    new Usuario('Miguelazo232', '123456', [], []),
-    new Usuario('JuanchOcan4lla1889', '32737', ['joseLepra2006'], []),
-    new Usuario('joseLepra2006', '456789', ['JuanchOcan4lla'], [])
+    new User('Miguelazo232', '123456', [], []),
+    new User('JuanchOcan4lla1889', '32737', ['joseLepra2006'], []),
+    new User('joseLepra2006', '456789', ['JuanchOcan4lla'], [])
 ];
 export class UserRepository {
     findAll() {

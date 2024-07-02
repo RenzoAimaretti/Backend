@@ -1,10 +1,10 @@
 import crypto from 'node:crypto'
-export class Usuario{
+export class User{
     constructor(
-        public nombre:string,
-        public clave:string,
-        public amigos:string[],
-        public listas:object[],
+        public name:string,
+        public password:string,
+        public friends:string[],
+        public list:object[],
         public id=crypto.randomUUID()
     ){
 
