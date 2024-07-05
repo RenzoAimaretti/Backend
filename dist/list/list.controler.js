@@ -8,13 +8,12 @@ function sanitizeListInput(req, res, next) {
         name_list: req.body.name_list,
         contents: req.body.contents,
         user_id: req.body.user_id,
+        new_name: req.body.new_name
     };
-    console.log(req.body.sanitizedInput);
     Object.keys(req.body.sanitizedInput).forEach(key => {
         if (req.body.sanitizedInput[key] === undefined)
             delete req.body.sanitizedInput[key];
     });
-    console.log(req.body.sanitizedInput);
     next();
 }
 ;
@@ -53,7 +52,6 @@ function addOne(req, res) {
         input.user_id = id;
         const newList = new List(input.name_list, input.contents, input.user_id);
         const addedList = repository.add(newList);
-        console.log(addedList);
         owner.list.push(newList);
         userRepository.update(owner);
         return res.status(201).send({ Message: "List created", data: addedList });
@@ -69,9 +67,11 @@ function updateOne(req, res) {
     else {
         const input = req.body.sanitizedInput;
         input.user_id = id;
-        input.name_list = req.params.name_list;
-        const updatedList = repository.update(input);
-        console.log(updatedList);
+        let new_name = req.body.new_name;
+        if (new_name === "") {
+            new_name = input.name_list;
+        }
+        const updatedList = repository.update(input, new_name);
         if (!updatedList) {
             return res.status(404).send("List not found");
         }
@@ -82,7 +82,24 @@ function updateOne(req, res) {
 }
 ;
 function deleteOne(req, res) {
-    return res.status(201).send({ Message: "Funcionalidad no terminada" });
+    const id = req.params.user_id;
+    const owner = userRepository.findOne({ id: id });
+    if (!owner) {
+        return res.status(404).send("User not found");
+    }
+    else {
+        const deletedList = repository.delete({ id: id, attrs: req.params.name_list });
+        if (!deletedList) {
+            return res.status(404).send("List not found");
+        }
+        else {
+            const index = owner.list.findIndex(item => item === deletedList);
+            if (index !== -1) {
+                owner.list.splice(index, 1);
+            }
+            return res.status(200).send({ Message: "List deleted", data: deletedList });
+        }
+    }
 }
 ;
 export { sanitizeListInput, findAll, findOne, addOne, deleteOne, updateOne };

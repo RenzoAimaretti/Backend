@@ -17,19 +17,20 @@ export class ListRepository implements Repository<List>{
         return item;
     }
 
-    public update(item: List): List | undefined {
+    public update(item: List,attrs:string): List | undefined {
         //FALTA UNA VARIABLE PARA GUARDAR EL NOMBRE VIEJO POR QUE SINO NO PODEMOS BUSCAR
         //HAY Q FILTRAR RESPECTO DEL NOMBRE VIEJO!!!
         const index = lists.findIndex(list => (list.user_id === item.user_id && list.name_list===item.name_list))
         if (index !== -1) {
-            lists[index].user_id = item.user_id;
-            lists[index].name_list = item.name_list;
+            console.log(attrs)
+            lists[index].name_list = attrs;
+            lists[index].contents = item.contents;
             return lists[index];
         }
-        return undefined; // Add this line to handle the case when the list is not found
     }
 
     public delete(item: { id: string, attrs:string }): List | undefined {
+        console.log(item)
         const index = lists.findIndex(list => (list.user_id === item.id && list.name_list===item.attrs));
         if (index !== -1) {
             const deletedList = lists[index];
