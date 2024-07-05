@@ -1,4 +1,5 @@
-const lists = [];
+import { List } from "./list.entity.js";
+const lists = [new List('ListaPrueba', [], 'df01afd4-2560-4581-93c3-33ed77d3b091')];
 export class ListRepository {
     findAll() {
         return lists;
