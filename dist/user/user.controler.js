@@ -45,7 +45,7 @@ function updateOne(req, res) {
     req.body.sanitizedInput.id = req.params.id;
     const updatedUser = repository.update(req.body.sanitizedInput);
     if (!updatedUser) {
-        return res.status(404).send('Character not found');
+        return res.status(404).send('User not found');
     }
     else {
         return res.status(200).send({ Message: 'User updated', data: updatedUser });

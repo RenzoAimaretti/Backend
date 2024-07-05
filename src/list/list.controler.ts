@@ -29,8 +29,20 @@ function findAll(req:Request, res:Response){
 };
 
 function findOne(req:Request, res:Response){
-    
+    const id = req.params.user_id;
+    const name_list = req.params.name_list;
+    const owner = userRepository.findOne({ id: id });
+    if(owner === undefined){
+        return res.status(404).send("User not found");
+    }else{
+        const list = owner.list.find((list) => list.name_list === name_list);
+        if(list === undefined){
+            return res.status(404).send("List not found");
+        }else{
+            return res.status(200).send({ Message: "List found", data: list });
+        }
     };
+};
 
 function addOne(req: Request, res: Response) {
     const id=req.params.user_id
@@ -54,7 +66,25 @@ function addOne(req: Request, res: Response) {
 };
 
 function updateOne(req:Request, res:Response){
-    return res.status(201).send({ Message: "Funcionalidad no terminada" });
+  const id=req.params.user_id;
+  const owner=userRepository.findOne({id:id})
+    if(!owner){
+        return res.status(404).send("User not found");
+    }else{
+        const input=req.body.sanitizedInput;
+        input.user_id=id;
+        input.name_list=req.params.name_list;
+        const updatedList=repository.update(input);
+        console.log(updatedList);
+        if(!updatedList){
+            return res.status(404).send("List not found");
+        }else{
+            return res.status(200).send({Message: "List updated", data: updatedList});
+        }
+    
+    }
+
+
 };
 
 function deleteOne(req:Request,res:Response){
