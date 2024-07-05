@@ -1,16 +1,16 @@
 import { Router } from "express";
-import { sanitizeUserInput, findAll, findOne, deleteOne, addOne, updateOne } from "./list.controler.js";
+import { sanitizeListInput, findAll, findOne, deleteOne, addOne, updateOne } from "./list.controler.js";
 
 export const listRouter=Router();
 
 listRouter.get('/',findAll);
 
-listRouter.get('/:id/:name_list',findOne);
+listRouter.get('/:user_id/:name_list',findOne);
 
-listRouter.post('/',sanitizeUserInput,addOne);
+listRouter.post('/:user_id',sanitizeListInput,addOne);
 
-listRouter.put('/:id/:name_list',sanitizeUserInput,updateOne);
+listRouter.put('/:user_id/:name_list',sanitizeListInput,updateOne);
 
-listRouter.patch('/:id/:name_list',sanitizeUserInput,updateOne);
+listRouter.patch('/:user_id/:name_list',sanitizeListInput,updateOne);
 
-listRouter.delete('/:id/:name_list',deleteOne);
+listRouter.delete('/:user_id/:name_list',deleteOne);
