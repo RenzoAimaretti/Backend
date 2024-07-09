@@ -44,7 +44,7 @@ function addOne(req: Request,res: Response){
 //modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
 function updateOne(req: Request,res: Response){
     req.body.sanitizedInput.id=req.params.id;
-    const updatedUser= repository.update(req.body.sanitizedInput);
+    const updatedUser= repository.update(req.body.sanitizedInput.id, req.body.sanitizedInput);
     if(!updatedUser) {return res.status(404).send('User not found')}
     else{return res.status(200).send({Message: 'User updated', data: updatedUser});}
     
