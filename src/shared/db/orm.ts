@@ -4,7 +4,7 @@ import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
 export const orm = await MikroORM.init({
     entities:['dist/**/*.entity.js'],
     entitiesTs:['src/**/*.entity.ts'],
-    dbName:'cinemateca',
+    dbName:'backenddsw',
     type:'mysql',
     clientUrl: 'mysql://tpdsw:tpdsw@localhost:3306/cinemateca',
     highlighter: new SqlHighlighter(),

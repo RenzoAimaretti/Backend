@@ -1,3 +1,4 @@
+import { Cinerange } from "./cinerange.entity.js";
 import { CinerangeRepository } from "./cinerange.repository.js";
 const repository = new CinerangeRepository();
 function sanitizeCinerangeInput(req, res, next) {
@@ -28,5 +29,33 @@ function findOne(req, res) {
         res.status(404).send('range not found');
     }
 }
-export { sanitizeCinerangeInput, findAll };
+;
+function add(req, res) {
+    const input = req.body.sanitizedInput;
+    const newRange = new Cinerange(input.name_range, input.desc_range, input.id_range);
+    const addedRange = repository.add(newRange);
+    return res.status(201).send({ Message: 'Range created', data: addedRange });
+}
+function updateOne(req, res) {
+    req.body.sanitizedInput.id_range = req.params.id_range;
+    const updatedRange = repository.update(req.body.sanitizedInput);
+    if (!updatedRange) {
+        return res.status(404).send('Range not found');
+    }
+    else {
+        return res.status(200).send({ Message: 'Range updated', data: updatedRange });
+    }
+}
+;
+function deleteOne(req, res) {
+    const deletedRange = repository.delete({ id: req.params.id_range });
+    if (!deletedRange) {
+        return res.status(404).send('Range not found');
+    }
+    else {
+        return res.status(200).send({ Message: 'Range deleted', data: deletedRange });
+    }
+}
+;
+export { sanitizeCinerangeInput, findAll, findOne, add, updateOne, deleteOne };
 //# sourceMappingURL=cinerange.controler.js.map

@@ -1,11 +1,7 @@
-import { ListRepository } from "./list.repository.js"
-import { UserRepository } from "../user/user.repository.js";
+
 import { Request,Response,NextFunction } from "express";
 import { List } from "./list.entity.js";
 
-
-const repository = new ListRepository();
-const userRepository = new UserRepository();
 
 function sanitizeListInput(req: Request, res: Response, next:NextFunction){
     req.body.sanitizedInput ={
@@ -23,81 +19,23 @@ function sanitizeListInput(req: Request, res: Response, next:NextFunction){
 };
 
 function findAll(req:Request, res:Response){
-    res.json({data:repository.findAll()})
+    throw Error('Not implemented yet');
 };
 
 function findOne(req:Request, res:Response){
-    const id = req.params.user_id;
-    const name_list = req.params.name_list;
-    const owner = userRepository.findOne({ id: id });
-    if(owner === undefined){
-        return res.status(404).send("User not found");
-    }else{
-        const list = owner.list.find((list) => list.name_list === name_list);
-        if(list === undefined){
-            return res.status(404).send("List not found");
-        }else{
-            return res.status(200).send({ Message: "List found", data: list });
-        }
-    };
+    throw Error('Not implemented yet');
 };
 
 function addOne(req: Request, res: Response) {
-    const id=req.params.user_id
-    const input = req.body.sanitizedInput;
-    const owner = userRepository.findOne({ id: id });
-    console.log(owner)
-
-    if (!owner) {
-        return res.status(404).send("User not found");
-    } else {
-        input.user_id=id
-        const newList = new List(input.name_list, input.contents, input.user_id);
-        const addedList = repository.add(newList);
-        owner.list.push(newList);
-        userRepository.update(owner);
-        return res.status(201).send({ Message: "List created", data: addedList });
-    }    
+    throw Error('Not implemented yet');
 };
 
 function updateOne(req:Request, res:Response){
-  const id=req.params.user_id;
-  const owner=userRepository.findOne({id:id})
-    if(!owner){
-        return res.status(404).send("User not found");
-    }else{
-        const input=req.body.sanitizedInput;
-        input.user_id=id;
-        let new_name = req.body.new_name
-        if (new_name===""){
-            new_name=input.name_list
-        }
-        const updatedList=repository.update(input,new_name);
-        if(!updatedList){
-            return res.status(404).send("List not found");
-        }else{
-            return res.status(200).send({Message: "List updated", data: updatedList});
-        }  
-    }
+    throw Error('Not implemented yet');
 };
 
 function deleteOne(req:Request,res:Response){
-    const id=req.params.user_id;
-    const owner=userRepository.findOne({id:id})
-    if(!owner){
-        return res.status(404).send("User not found");
-    }else{
-        const deletedList=repository.delete({id:id,attrs:req.params.name_list})
-        if(!deletedList){
-            return res.status(404).send("List not found");
-        }else{
-            const index=owner.list.findIndex(item=>item===deletedList)
-            if (index!==-1){
-                owner.list.splice(index,1);   
-            }
-            return res.status(200).send({Message: "List deleted", data: deletedList});
-        }  
-    }
+    throw Error('Not implemented yet');
 };
 
 export {sanitizeListInput, findAll, findOne, addOne, deleteOne, updateOne}

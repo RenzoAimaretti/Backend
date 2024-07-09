@@ -1,7 +1,4 @@
-import { UserRepository } from "./user.repository.js";
-import { User } from "./user.entity.js";
-const repository = new UserRepository();
-function sanitizeUserInput(req, res, next) {
+async function sanitizeUserInput(req, res, next) {
     req.body.sanitizedInput = {
         name: req.body.name,
         password: req.body.password,
@@ -16,51 +13,28 @@ function sanitizeUserInput(req, res, next) {
     next();
 }
 ;
-function findAll(req, res) {
-    res.json({ data: repository.findAll() });
+async function findAll(req, res) {
+    throw Error('Not implemented yet');
 }
 ;
 //consultar por id
-function findOne(req, res) {
-    const idRequest = req.params.id;
-    const user = repository.findOne({ id: idRequest });
-    if (user) {
-        return res.json({ data: user });
-    }
-    else {
-        res.status(404).send('user not found');
-    }
+async function findOne(req, res) {
+    throw Error('Not implemented yet');
 }
 ;
 //añadir uno nuevo
-function addOne(req, res) {
-    const input = req.body.sanitizedInput;
-    const newUser = new User(input.name, input.password, input.friends, input.list);
-    const addedUser = repository.add(newUser);
-    return res.status(201).send({ Message: 'User created', data: addedUser });
+async function addOne(req, res) {
+    throw Error('Not implemented yet');
 }
 ;
 //modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
-function updateOne(req, res) {
-    req.body.sanitizedInput.id = req.params.id;
-    const updatedUser = repository.update(req.body.sanitizedInput);
-    if (!updatedUser) {
-        return res.status(404).send('User not found');
-    }
-    else {
-        return res.status(200).send({ Message: 'User updated', data: updatedUser });
-    }
+async function updateOne(req, res) {
+    throw Error('Not implemented yet');
 }
 ;
 //borrar un character
-function deleteOne(req, res) {
-    const deletedUser = repository.delete({ id: req.params.id });
-    if (!deletedUser) {
-        return res.status(404).send('User not found');
-    }
-    else {
-        return res.status(200).send({ Message: 'User deleted', data: deletedUser });
-    }
+async function deleteOne(req, res) {
+    throw Error('Not implemented yet');
 }
 ;
 export { sanitizeUserInput, findAll, findOne, addOne, updateOne, deleteOne };
