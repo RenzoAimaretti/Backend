@@ -11,10 +11,13 @@ import { Cascade, Collection, Entity, ManyToOne, ManyToMany, OneToMany, Property
 import { RangoCinefilo } from "./rangoCinefilo.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { List } from "../list/list.entity.js";
+import { Subscription } from "../subscription/subscription.entity.js";
 let User = class User extends BaseEntity {
     constructor() {
         super(...arguments);
         this.lists = new Collection(this);
+        this.friends = new Collection(this);
+        this.friendsFrom = new Collection(this);
     }
 };
 __decorate([
@@ -38,9 +41,21 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "lists", void 0);
 __decorate([
+    ManyToMany(() => User, user => user.friendsFrom, { cascade: [Cascade.ALL], owner: true }),
+    __metadata("design:type", Object)
+], User.prototype, "friends", void 0);
+__decorate([
+    ManyToMany(() => User, user => user.friends, { cascade: [Cascade.ALL] }),
+    __metadata("design:type", Object)
+], User.prototype, "friendsFrom", void 0);
+__decorate([
     ManyToMany(() => List, list => list.followers, { cascade: [Cascade.ALL], owner: true }),
     __metadata("design:type", Array)
 ], User.prototype, "followingLists", void 0);
+__decorate([
+    ManyToOne(() => Subscription, { nullable: false }),
+    __metadata("design:type", Object)
+], User.prototype, "subscription", void 0);
 User = __decorate([
     Entity()
 ], User);

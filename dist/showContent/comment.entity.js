@@ -7,11 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { PrimaryKey } from '@mikro-orm/core';
-export class BaseEntity {
-}
+import { Entity, ManyToOne, Property } from "@mikro-orm/core";
+import { User } from "../user/user.entity.js";
+import { Review } from "./review.entity.js";
+let Comment = class Comment {
+};
 __decorate([
-    PrimaryKey({ autoincrement: true }),
-    __metadata("design:type", Number)
-], BaseEntity.prototype, "id", void 0);
-//# sourceMappingURL=baseEntity.entity.js.map
+    ManyToOne(() => User, { nullable: false, primary: true }),
+    __metadata("design:type", Object)
+], Comment.prototype, "commentOwner", void 0);
+__decorate([
+    ManyToOne(() => Review, { nullable: false, primary: true }),
+    __metadata("design:type", Object)
+], Comment.prototype, "commentReview", void 0);
+__decorate([
+    Property({ nullable: false }),
+    __metadata("design:type", String)
+], Comment.prototype, "comment", void 0);
+Comment = __decorate([
+    Entity()
+], Comment);
+export { Comment };
+//# sourceMappingURL=comment.entity.js.map
