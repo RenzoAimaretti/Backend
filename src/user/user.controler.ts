@@ -37,6 +37,7 @@ async function findOne(req: Request,res: Response){
     try {
         const id = Number.parseInt(req.params.id)
         const user = await em.findOneOrFail(User, {id}, {populate:['rangoCinefilo','friends','friendsFrom','lists','followingLists','subscription']})
+        res.status(200).json({message:'user found',data:user})
     } catch (error:any) {
         res.status(500).json({message: error.message})
     }
@@ -60,6 +61,7 @@ async function updateOne(req: Request,res: Response){
         const userToUpdate = await em.findOneOrFail(User, {id})
         em.assign(userToUpdate, req.body.sanitizedInput)
         await em.flush()
+        res.status(200).json({message:'user updated', data:userToUpdate})
     } catch (error:any) {
         res.status(500).json({message:error.message})
     }
@@ -71,6 +73,7 @@ async function deleteOne (req:Request,res:Response){
         const id = Number.parseInt(req.params.id)
         const user = em.getReference(User, id)
         await em.removeAndFlush(user)
+        res.status(200).json({message:'user delated'})
     } catch (error:any) {
         res.status(500).json({message: error.message})
     }
