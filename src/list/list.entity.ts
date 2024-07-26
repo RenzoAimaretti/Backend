@@ -1,12 +1,13 @@
-import { Collection, Entity,ManyToMany,ManyToOne,PrimaryKey,PrimaryKeyType,Property,Rel } from "@mikro-orm/core";
+import {Collection, Entity,ManyToMany,ManyToOne,PrimaryKey,PrimaryKeyType,Property,Rel } from "@mikro-orm/core";
 import { User } from "../user/user.entity.js";
 import { ShowContent } from "../showContent/showContent.entity.js";
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 
 
 @Entity()
-export class List{
+export class List extends BaseEntity{
             
-    @PrimaryKey()
+    @Property({nullable:false})
     nameList!:string;
 
     @Property({nullable:false})
@@ -15,7 +16,7 @@ export class List{
     @ManyToMany(()=>ShowContent,showContent=>showContent.lists,{owner:true})
     contents = new Collection<ShowContent>(this);
 
-    @ManyToOne(()=> User,{nullable:false, primary:true})
+    @ManyToOne(()=> User,{nullable:false, autoincrement:false})
     owner!: Rel<User>;
 
     /*
@@ -27,7 +28,6 @@ export class List{
     @ManyToMany(()=>User,user=>user.followingLists)
     followers = new Collection<User>(this);
 
-    [PrimaryKeyType]?: [string, number];
 
 }
     

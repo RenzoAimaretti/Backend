@@ -7,11 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Collection, Entity, ManyToMany, ManyToOne, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, ManyToOne, Property } from "@mikro-orm/core";
 import { User } from "../user/user.entity.js";
 import { ShowContent } from "../showContent/showContent.entity.js";
-let List = class List {
+import { BaseEntity } from "../shared/db/baseEntity.entity.js";
+let List = class List extends BaseEntity {
     constructor() {
+        super(...arguments);
         this.contents = new Collection(this);
         /*
         @Property({nullable:true})
@@ -22,7 +24,7 @@ let List = class List {
     }
 };
 __decorate([
-    PrimaryKey(),
+    Property({ nullable: false }),
     __metadata("design:type", String)
 ], List.prototype, "nameList", void 0);
 __decorate([
@@ -34,7 +36,7 @@ __decorate([
     __metadata("design:type", Object)
 ], List.prototype, "contents", void 0);
 __decorate([
-    ManyToOne(() => User, { nullable: false, primary: true }),
+    ManyToOne(() => User, { nullable: false, autoincrement: false }),
     __metadata("design:type", Object)
 ], List.prototype, "owner", void 0);
 __decorate([

@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", Object)
 ], User.prototype, "rangoCinefilo", void 0);
 __decorate([
-    OneToMany(() => List, list => list.owner, { cascade: [Cascade.ALL] }),
+    OneToMany(() => List, (list) => list.owner, { cascade: [Cascade.ALL] }),
     __metadata("design:type", Object)
 ], User.prototype, "lists", void 0);
 __decorate([

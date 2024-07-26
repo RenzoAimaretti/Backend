@@ -19,7 +19,7 @@ export class User extends BaseEntity{
         @ManyToOne(()=>RangoCinefilo,{nullable:false})
         rangoCinefilo!: Rel<RangoCinefilo>
 
-        @OneToMany(()=>List, list=>list.owner, {cascade:[Cascade.ALL]})
+        @OneToMany(()=>List, (list)=>list.owner, {cascade:[Cascade.ALL]})
         lists=new Collection<List>(this)
 
         @ManyToMany(() => User, user => user.friendsFrom, { cascade: [Cascade.ALL], owner: true })
