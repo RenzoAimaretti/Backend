@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { orm,syncSchema } from "./shared/db/orm.js";
 import { RequestContext } from "@mikro-orm/core";
 import {subscriptionRouter} from "./subscription/subscription.routes.js";
+import { rangoRouter } from "./user/rangoCinefilo.routes.js";
    
 const app=express()
 app.use(express.json())
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
 //Rutas
 app.use('/api/users', userRouter)
 app.use('/api/lists', listRouter)
+app.use('/api/rangos', rangoRouter)
 app.use('/api/subscription',subscriptionRouter) // /api/users/subscription?
 
 await syncSchema() // solo en dev, NO SE DEBE USAR EN PRODUCCION

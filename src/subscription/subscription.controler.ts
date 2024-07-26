@@ -1,4 +1,4 @@
-import { Request,Response,NextFunction } from "express";
+import { Request,Response } from "express";
 import { Subscription} from "./subscription.entity.js";
 import { orm } from "../shared/db/orm.js";
 
@@ -28,7 +28,7 @@ async function findOne(req: Request,res: Response){
 async function addOne(req: Request,res: Response){
     try {
         const subscription = em.create(Subscription, req.body)
-        await em.flush
+        await em.flush()
         res.status(201).json({message:'subscription created', data:subscription})
     } catch (error:any) {
         res.status(500).json({message: error.message})  
@@ -59,4 +59,4 @@ async function deleteOne (req:Request,res:Response){
             res.status(500).json({message:error.message})
         }
 };
-export {sanitizeUserInput, findAll, findOne, addOne, updateOne, deleteOne}
+export { findAll, findOne, addOne, updateOne, deleteOne}

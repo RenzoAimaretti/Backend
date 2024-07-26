@@ -3,7 +3,7 @@ import { User } from "./user.entity.js";
 import { orm } from "../shared/db/orm.js";
 
 const em = orm.em
-
+/*
 async function sanitizeUserInput(req: Request , res: Response , next:NextFunction) {
     req.body.sanitizedInput = {
        name: req.body.name,
@@ -22,7 +22,7 @@ async function sanitizeUserInput(req: Request , res: Response , next:NextFunctio
         }
     });
     next(); 
-};
+};*/
 async function findAll(req: Request,res: Response){
     try {
         const users = await em.find(User, {}, {populate:['rangoCinefilo','friends','friendsFrom','lists','followingLists','subscription']})
@@ -46,8 +46,8 @@ async function findOne(req: Request,res: Response){
 //añadir uno nuevo
 async function addOne(req: Request,res: Response){
     try {
-        const user = em.create(User,req.body.sanitizedInput)
-        await em.flush
+        const user = em.create(User, req.body)//sani
+        await em.flush()
         res.status(201).json({message:'user created', data:user})
     } catch (error:any) {
         res.status(200).json({message: error.message})
@@ -59,7 +59,7 @@ async function updateOne(req: Request,res: Response){
     try {
         const id = Number.parseInt(req.params.id)
         const userToUpdate = await em.findOneOrFail(User, {id})
-        em.assign(userToUpdate, req.body.sanitizedInput)
+        em.assign(userToUpdate, req.body)//sani
         await em.flush()
         res.status(200).json({message:'user updated', data:userToUpdate})
     } catch (error:any) {
@@ -79,4 +79,4 @@ async function deleteOne (req:Request,res:Response){
     }
 };
 
-export {sanitizeUserInput, findAll, findOne, addOne, updateOne, deleteOne}
+export { findAll, findOne, addOne, updateOne, deleteOne}

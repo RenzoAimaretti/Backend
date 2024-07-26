@@ -11,6 +11,5 @@ export class RangoCinefilo extends BaseEntity{
     @Property({nullable:false})
     descriptionRango!:string
 
-    @OneToMany(()=>User, user=>user.rangoCinefilo,{cascade:[Cascade.ALL]})
-    users=new Collection<User>(this)
+    
 }

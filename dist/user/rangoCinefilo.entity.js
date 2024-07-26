@@ -7,14 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { User } from "./user.entity.js";
-import { Cascade, Collection, Entity, OneToMany, Property } from "@mikro-orm/core";
+import { Entity, Property } from "@mikro-orm/core";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 let RangoCinefilo = class RangoCinefilo extends BaseEntity {
-    constructor() {
-        super(...arguments);
-        this.users = new Collection(this);
-    }
 };
 __decorate([
     Property({ nullable: false, unique: true }),
@@ -24,10 +19,6 @@ __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)
 ], RangoCinefilo.prototype, "descriptionRango", void 0);
-__decorate([
-    OneToMany(() => User, user => user.rangoCinefilo, { cascade: [Cascade.ALL] }),
-    __metadata("design:type", Object)
-], RangoCinefilo.prototype, "users", void 0);
 RangoCinefilo = __decorate([
     Entity()
 ], RangoCinefilo);

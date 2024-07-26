@@ -1,30 +1,66 @@
-async function sanitizeUserInput(req, res, next) {
-    next();
-}
-;
+import { RangoCinefilo } from "./rangoCinefilo.entity.js";
+import { orm } from "../shared/db/orm.js";
+const em = orm.em;
 async function findAll(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const range = await em.find(RangoCinefilo, {});
+        res.status(200).json({ message: 'all range found', data: range });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 ;
 //consultar por id
 async function findOne(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const id = Number.parseInt(req.params.id);
+        const range = await em.findOneOrFail(RangoCinefilo, { id });
+        res.status(200).json({ message: 'range found', data: range });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 ;
 //añadir uno nuevo
 async function addOne(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const range = em.create(RangoCinefilo, req.body);
+        await em.flush();
+        res.status(201).json({ message: 'range created', data: range });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 ;
 //modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
 async function updateOne(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const id = Number.parseInt(req.params.id);
+        const rangeToUpadte = await em.findOneOrFail(RangoCinefilo, { id });
+        em.assign(rangeToUpadte, req.body);
+        await em.flush();
+        res.status(200).json({ message: 'range updated', data: rangeToUpadte });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 ;
 //borrar un character
 async function deleteOne(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const id = Number.parseInt(req.params.id);
+        const range = em.getReference(RangoCinefilo, id);
+        await em.removeAndFlush(range);
+        res.status(200).json({ message: 'range delated', data: range });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 }
 ;
-export { sanitizeUserInput, findAll, findOne, addOne, updateOne, deleteOne };
+export { findAll, findOne, addOne, updateOne, deleteOne };
 //# sourceMappingURL=rangoCinefilo.controler.js.map
