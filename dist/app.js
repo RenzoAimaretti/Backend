@@ -6,8 +6,14 @@ import { orm, syncSchema } from "./shared/db/orm.js";
 import { RequestContext } from "@mikro-orm/core";
 import { subscriptionRouter } from "./subscription/subscription.routes.js";
 import { rangoRouter } from "./user/rangoCinefilo.routes.js";
+import cors from 'cors';
 const app = express();
 app.use(express.json());
+const corsOptions = {
+    origin: 'http://localhost:4200',
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 //adicion del middleware orm despues de los base y antes de los de negocio y sus rutas
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
