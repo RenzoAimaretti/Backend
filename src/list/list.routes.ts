@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, addOne, updateOne } from "./list.controler.js";
+import { findAll, findOne, deleteOne, addOne, updateOne,searchLists } from "./list.controler.js";
 
 export const listRouter=Router();
 
@@ -14,3 +14,5 @@ listRouter.put('/:userId/:nameList',updateOne);
 listRouter.patch('/:userId/:nameList',updateOne);
 
 listRouter.delete('/:id',deleteOne);
+
+listRouter.get('/search', searchLists); //api/search...
