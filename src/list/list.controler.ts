@@ -1,20 +1,17 @@
 import { Request, Response } from "express";
 import { List } from "./list.entity.js";
 import { orm } from "../shared/db/orm.js";
-
 const em = orm.em;
 
-// Función para buscar listas basado en el nombre
+
 async function searchLists(req: Request, res: Response) {
     try {
         const query = req.query.nameList as string;
 
         if (typeof query === 'string' && query.trim()) {
-            // Busca listas cuyo nombre empiece con el valor de 'query'
+            // Buscar listas cuyo nombre contenga el valor de 'query'
             const lists = await em.find(List, {
-                nameList: {
-                    $like: `${query}%`
-                }
+                nameList: { $like: `%${query}%` } // Esto es correcto
             }, { populate: ['contents', 'owner', 'followers'] });
 
             res.status(200).json({ message: 'Lists found', data: lists });
@@ -25,6 +22,7 @@ async function searchLists(req: Request, res: Response) {
         res.status(500).json({ message: error.message });
     }
 }
+
 
 
 async function findAll(req: Request, res: Response) {
