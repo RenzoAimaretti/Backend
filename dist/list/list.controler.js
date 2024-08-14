@@ -1,5 +1,5 @@
 import { List } from "./list.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { orm } from "../mikro-orm.config.js";
 const em = orm.em;
 /*function sanitizeListInput(req: Request, res: Response, next:NextFunction){
     req.body.sanitizedInput ={

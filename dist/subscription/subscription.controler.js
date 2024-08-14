@@ -1,5 +1,5 @@
 import { Subscription } from "./subscription.entity.js";
-import { orm } from "../shared/db/orm.js";
+import { orm } from "../mikro-orm.config.js";
 const em = orm.em;
 async function findAll(req, res) {
     try {

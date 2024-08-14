@@ -8,6 +8,14 @@ export const orm = await MikroORM.init({
     clientUrl: 'mysql://tpdsw:tpdsw@localhost:3306/',
     highlighter: new SqlHighlighter(),
     debug: true,
+    seeder: {
+        path: 'src/shared/db/seeders',
+        pathTs: undefined, // path to the folder with TS seeders (if used, we should put path to compiled files in `path`)
+        defaultSeeder: 'DatabaseSeeder', // default seeder class name
+        glob: '!(*.d).{js,ts}', // how to match seeder files (all .js and .ts files, but not .d.ts)
+        emit: 'ts', // seeder generation mode
+        fileName: (className) => className,
+    },
     schemaGenerator: {
         disableForeignKeys: true,
         createForeignKeyConstraints: true,
@@ -22,4 +30,4 @@ export const syncSchema = async () => {
      */
     await generator.updateSchema();
 };
-//# sourceMappingURL=orm.js.map
+//# sourceMappingURL=mikro-orm.config.js.map

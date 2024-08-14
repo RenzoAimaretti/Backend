@@ -2,11 +2,12 @@ import  express  from "express";
 import { userRouter } from "./user/users.routes.js";
 import { listRouter } from "./list/list.routes.js";
 import 'reflect-metadata';
-import { orm,syncSchema } from "./shared/db/orm.js";
+import { orm,syncSchema } from "./mikro-orm.config.js";
 import { RequestContext } from "@mikro-orm/core";
 import {subscriptionRouter} from "./subscription/subscription.routes.js";
 import { rangoRouter } from "./user/rangoCinefilo.routes.js";
 import cors from 'cors';
+
 const app=express()
 app.use(express.json())
 
