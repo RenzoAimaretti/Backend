@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Collection, Entity, ManyToOne, ManyToMany, OneToMany, Property } from "@mikro-orm/core";
+import { Cascade, Collection, Entity, ManyToOne, ManyToMany, OneToMany, Property, PrimaryKey } from "@mikro-orm/core";
 import { RangoCinefilo } from "./rangoCinefilo.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { List } from "../list/list.entity.js";
@@ -20,6 +20,10 @@ let User = class User extends BaseEntity {
         this.friendsFrom = new Collection(this);
     }
 };
+__decorate([
+    PrimaryKey(),
+    __metadata("design:type", Number)
+], User.prototype, "id", void 0);
 __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)
