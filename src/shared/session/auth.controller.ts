@@ -69,7 +69,7 @@ function logout(req: Request, res: Response) {
         if (err) {
             return res.status(500).json({ message: 'Logout failed' });
         }
-        res.status(200).json({ message: 'Logout successful' });
+        res.status(200).json({ message: 'Logout successful' }).clearCookie('access_token');
     });
 }
 

@@ -9,10 +9,23 @@ import { rangoRouter } from "./user/rangoCinefilo.routes.js";
 import { authRouter } from "./shared/session/auth.routes.js";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import jwt from "jsonwebtoken";
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    const token = req.cookies.access_token;
+    let data = null;
+    req.session = { user: null };
+    try {
+        data = jwt.verify(token, 'clavesecreta-de-prueba-provisional-n$@#131238s91');
+    }
+    catch (error) {
+        req.session.user = null;
+    }
+    next();
+});
 const corsOptions = {
     origin: 'http://localhost:4200',
     optionsSuccessStatus: 200,
