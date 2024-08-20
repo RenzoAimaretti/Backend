@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { User } from '../../user/user.entity.js';
 import { orm } from '../db/orm.js';
-
+import jwt from 'jsonwebtoken';
 const em = orm.em;
 
 async function register(req: Request, res: Response) {
@@ -33,12 +33,32 @@ async function login(req: Request, res: Response) {
     const { email, password } = req.body;
 
     const user = await em.findOne(User, { email });
-    console.log(user)
-    console.log(password)
-    console.log(user?.password)
     if (user && await bcrypt.compare(password, user.password)) {
-        req.session.userId = user.id; // Guardar userId en la sesión
-        res.status(200).json({ message: 'Login successful', data: user });
+        const userWithoutPassword = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            rangoCinefilo: user.rangoCinefilo,
+            subscription: user.subscription
+        };
+        const token = jwt.sign(
+            {id:user.id,
+            name:user.name,
+            email:user.email,
+            rangoCinefilo:user.rangoCinefilo,
+            subscription:user.subscription},
+
+            'clavesecreta-de-prueba-provisional-n$@#131238s91',
+
+            {expiresIn:'1h'})
+
+        res.cookie('access_token', token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge:1000*60*60
+        }).send({message:'Successful login',data:userWithoutPassword,token});
+
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
     }

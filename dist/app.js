@@ -8,9 +8,10 @@ import { subscriptionRouter } from "./subscription/subscription.routes.js";
 import { rangoRouter } from "./user/rangoCinefilo.routes.js";
 import { authRouter } from "./shared/session/auth.routes.js";
 import cors from 'cors';
-import session from 'express-session';
+import cookieParser from 'cookie-parser';
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
     origin: 'http://localhost:4200',
@@ -22,12 +23,6 @@ app.use(cors(corsOptions));
 app.use((req, res, next) => {
     RequestContext.create(orm.em, next);
 });
-app.use(session({
-    secret: '123456',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }
-}));
 //Rutas
 app.use('/api/users', userRouter);
 app.use('/api/lists', listRouter);
