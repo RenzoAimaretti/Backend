@@ -14,7 +14,6 @@ async function register(req: Request, res: Response) {
 
     // Hashear la contraseña
     const password= await bcrypt.hash(req.body.password, 10);
-    console.log("paso por aca")
     const user = em.create(User,{
         name: name,
         email:email,
@@ -54,9 +53,10 @@ async function login(req: Request, res: Response) {
 
         res.cookie('access_token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge:1000*60*60
+            secure: false,
+            sameSite: 'none',
+            maxAge:1000*60*60,
+            path:'/'
         }).send({message:'Successful login',data:userWithoutPassword,token});
 
     } else {
@@ -65,12 +65,11 @@ async function login(req: Request, res: Response) {
 }
 
 function logout(req: Request, res: Response) {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ message: 'Logout failed' });
-        }
-        res.status(200).json({ message: 'Logout successful' }).clearCookie('access_token');
-    });
+    res.clearCookie('access_token', {
+    path: '/',
+    sameSite: 'none', 
+    secure: false
+});
 }
 
 export { register, login, logout };
