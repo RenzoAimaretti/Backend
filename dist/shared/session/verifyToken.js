@@ -7,7 +7,7 @@ export function verifyToken(req, res, next) {
     jwt.verify(token, 'clavesecreta-de-prueba-provisional-n$@#131238s91', (err, decoded) => {
         if (err)
             return res.status(401).send({ message: err.message, token: token });
-        req.userId = decoded.id;
+        req.body.userId = decoded.id;
         console.log(decoded);
         next();
     });
