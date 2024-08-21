@@ -6,13 +6,34 @@ import { orm,syncSchema } from "./shared/db/orm.js";
 import { RequestContext } from "@mikro-orm/core";
 import {subscriptionRouter} from "./subscription/subscription.routes.js";
 import { rangoRouter } from "./user/rangoCinefilo.routes.js";
+import { authRouter } from "./shared/session/auth.routes.js";
 import cors from 'cors';
+import cookieParser from 'cookie-parser'
+import jwt from "jsonwebtoken";
+
 const app=express()
 app.use(express.json())
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+app.use((req,res,next)=>{
+    const token = req.cookies.access_token
+    let data = null
+    req.session={user:null}as any
+    try{
+        data = jwt.verify(token,'clavesecreta-de-prueba-provisional-n$@#131238s91')
+    }catch(error){
+        req.session.user=null
+    }
+
+    next()
+})
+
 
 const corsOptions = {
     origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    credentials: true
 };
 
 app.use(cors(corsOptions));
@@ -22,12 +43,14 @@ app.use(cors(corsOptions));
 app.use((req, res, next) => {
     RequestContext.create(orm.em,next)
 })
+
+
 //Rutas
 app.use('/api/users', userRouter)
 app.use('/api/lists', listRouter)
 app.use('/api/rangos', rangoRouter)
 app.use('/api/subscription',subscriptionRouter) // /api/users/subscription?
-
+app.use('/api/auth', authRouter)
 await syncSchema() // solo en dev, NO SE DEBE USAR EN PRODUCCION
 
 app.listen(3000,()=>{

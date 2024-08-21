@@ -1,4 +1,4 @@
-import { Cascade,Collection, Entity,ManyToOne,ManyToMany,OneToMany,Property, Rel } from "@mikro-orm/core";
+import { Cascade,Collection, Entity,ManyToOne,ManyToMany,OneToMany,Property, Rel, PrimaryKey } from "@mikro-orm/core";
 import { RangoCinefilo } from "./rangoCinefilo.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { List } from "../list/list.entity.js";
@@ -6,6 +6,8 @@ import { Subscription } from "../subscription/subscription.entity.js";
 import { Comment } from "../showContent/comment.entity.js";
 @Entity()
 export class User extends BaseEntity{
+        @PrimaryKey()
+        id!:number
         
         @Property({nullable:false})
         name!:string
