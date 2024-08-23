@@ -79,6 +79,9 @@ async function updateOne(req, res) {
         const id = Number.parseInt(req.params.id);
         const userToUpdate = await em.findOneOrFail(User, { id });
         //encripta el password del usuario
+        if (req.body.password == null) {
+            req.body.password = userToUpdate.password;
+        }
         req.body.password = await bcrypt.hash(req.body.password, 10);
         em.assign(userToUpdate, req.body); //sani
         await em.flush();
