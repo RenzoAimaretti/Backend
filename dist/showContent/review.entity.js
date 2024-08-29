@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", ShowContent)
 ], Review.prototype, "showReviewd", void 0);
 __decorate([
-    OneToMany(() => Comment, comment => comment.commentReview, { cascade: [Cascade.ALL] }),
+    OneToMany(() => Comment, comment => comment.commentReview, { cascade: [Cascade.ALL], nullable: true }),
     __metadata("design:type", Array)
 ], Review.prototype, "comments", void 0);
 Review = __decorate([

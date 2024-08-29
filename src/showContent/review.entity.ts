@@ -17,6 +17,6 @@ export class Review {
     @ManyToOne(()=>ShowContent,{nullable:false, primary:true})
     showReviewd!:ShowContent;
 
-    @OneToMany(()=>Comment, comment=>comment.commentReview, {cascade:[Cascade.ALL]})
+    @OneToMany(()=>Comment, comment=>comment.commentReview, {cascade:[Cascade.ALL],nullable:true})
     comments!:Comment[];
 }
