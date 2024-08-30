@@ -74,23 +74,37 @@ async function findOneDashboard(req: Request,res: Response){
 // };
 
 //modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
-async function updateOne(req: Request,res: Response){
+async function updateOne(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const userToUpdate = await em.findOneOrFail(User, {id})
-        //encripta el password del usuario
-        if(req.body.password==null){
-            req.body.password=userToUpdate.password
+        const id = Number.parseInt(req.params.id);
+        console.log('ID del usuario a actualizar:', id); // Log para verificar el ID
+
+        const userToUpdate = await em.findOneOrFail(User, { id });
+        console.log('Usuario antes de actualizar:', userToUpdate); // Log para verificar los datos del usuario antes de actualizar
+
+        // Encripta la contraseña solo si se proporciona una nueva
+        if (req.body.password) {
+            req.body.password = await bcrypt.hash(req.body.password, 10);
+            console.log('Contraseña encriptada:', req.body.password); // Log para verificar la nueva contraseña encriptada
         }
-        req.body.password= await bcrypt.hash(req.body.password, 10);
-        em.assign(userToUpdate, req.body)//sani
-        await em.flush()
-        res.status(200).json({message:'user updated', data:userToUpdate})
-    } catch (error:any) {
-        res.status(500).json({message:error.message})
+
+        // Asigna solo los campos que existen y son válidos
+        const updateData: Partial<User> = {};
+        if (req.body.name) updateData.name = req.body.name;
+        if (req.body.password) updateData.password = req.body.password;
+
+        console.log('Datos para actualizar:', updateData); // Log para verificar los datos que se van a actualizar
+
+        em.assign(userToUpdate, updateData);
+        await em.flush();
+
+        console.log('Usuario después de actualizar:', userToUpdate); // Log para verificar los datos del usuario después de actualizar
+        res.status(200).json({ message: 'user updated', data: userToUpdate });
+    } catch (error: any) {
+        console.error('Error actualizando el usuario:', error.message); // Log para errores
+        res.status(500).json({ message: error.message });
     }
 }
-
 //borrar un character
 async function deleteOne (req:Request,res:Response){
     try {
@@ -102,5 +116,23 @@ async function deleteOne (req:Request,res:Response){
         res.status(500).json({message: error.message})
     }
 };
+async function searchUsers(req: Request, res: Response) {
+    try {
+        const query = req.query.name as string; // Nombre del parámetro de consulta
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne}
+        if (typeof query === 'string' && query.trim()) {
+            // Buscar usuarios cuyo nombre de usuario contenga el valor de 'query'
+            const users = await em.find(User, {
+                name: { $like: `%${query}%` } 
+            });
+
+            res.status(200).json({ message: 'Users found', data: users });
+        } else {
+            res.status(400).json({ message: 'Invalid query parameter' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers}
