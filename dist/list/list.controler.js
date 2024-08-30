@@ -1,5 +1,6 @@
 import { List } from "./list.entity.js";
 import { orm } from "../shared/db/orm.js";
+import { addOneContent, findOneContent } from "../showContent/showContent.controler.js";
 const em = orm.em;
 async function searchLists(req, res) {
     try {
@@ -14,6 +15,32 @@ async function searchLists(req, res) {
         else {
             res.status(400).json({ message: 'Invalid query parameter' });
         }
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+async function addContent(req, res) {
+    try {
+        const listId = Number.parseInt(req.params.listId);
+        const content = await findOneContent(req, res);
+        const list = await em.findOneOrFail(List, { id: listId }, { populate: ['contents'] });
+        if (content != null) {
+            if (list.contents.contains(content)) {
+                res.status(400).json({ message: 'content already in list' });
+            }
+            else {
+                list.contents.add(content);
+                await em.flush();
+            }
+        }
+        else {
+            addOneContent(req, res);
+            const content = await findOneContent(req, res);
+            list.contents.add(content);
+            await em.flush();
+        }
+        res.status(200).json({ message: 'content added to list', data: list });
     }
     catch (error) {
         res.status(500).json({ message: error.message });
@@ -62,5 +89,5 @@ async function deleteOne(req, res) {
 function updateOne(req, res) {
     throw Error('Not implemented yet');
 }
-export { findAll, findOne, addOne, deleteOne, updateOne, searchLists };
+export { findAll, findOne, addOne, deleteOne, updateOne, searchLists, addContent };
 //# sourceMappingURL=list.controler.js.map

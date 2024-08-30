@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { List } from "./list.entity.js";
 import { orm } from "../shared/db/orm.js";
+import { ShowContent } from "../showContent/showContent.entity.js";
+import { addOneContent, findOneContent } from "../showContent/showContent.controler.js";
 const em = orm.em;
 
 
@@ -23,7 +25,29 @@ async function searchLists(req: Request, res: Response) {
     }
 }
 
-
+async function addContent(req: Request, res:Response){
+    try{
+        const listId = Number.parseInt(req.params.listId);
+        const content = await findOneContent(req,res)
+        const list = await em.findOneOrFail(List, { id: listId }, { populate: ['contents'] });
+        if (content!=null) {
+            if (list.contents.contains(content)) {
+            res.status(400).json({ message: 'content already in list' });
+        }else{
+            list.contents.add(content);
+            await em.flush();
+        }
+    }else{
+        addOneContent(req,res)
+        const content = await findOneContent(req,res) as ShowContent
+        list.contents.add(content);
+        await em.flush();
+    }
+    res.status(200).json({message:'content added to list',data:list});  
+}catch(error:any){
+    res.status(500).json({message: error.message});
+}
+}
 
 async function findAll(req: Request, res: Response) {
     try {
@@ -51,7 +75,7 @@ async function addOne(req: Request, res: Response) {
         res.status(201).json({ message: 'list created', data: list });
     } catch (error: any) {
         res.status(500).json({ message: error.message });
-    }
+    }    
 }
 
 async function deleteOne(req: Request, res: Response) {
@@ -69,4 +93,4 @@ function updateOne(req: Request, res: Response) {
     throw Error('Not implemented yet');
 }
 
-export { findAll, findOne, addOne, deleteOne, updateOne, searchLists };
+export { findAll, findOne, addOne, deleteOne, updateOne, searchLists, addContent };
