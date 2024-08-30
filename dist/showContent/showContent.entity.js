@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Entity, ManyToMany, Collection, PrimaryKey, Property } from "@mikro-orm/core";
+import { Cascade, Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { List } from "../list/list.entity.js";
 let ShowContent = class ShowContent {
     constructor() {
@@ -22,14 +22,6 @@ __decorate([
     Property({ nullable: false }),
     __metadata("design:type", String)
 ], ShowContent.prototype, "nameContent", void 0);
-__decorate([
-    Property({ nullable: false }),
-    __metadata("design:type", Array)
-], ShowContent.prototype, "tags", void 0);
-__decorate([
-    Property({ nullable: false }),
-    __metadata("design:type", Number)
-], ShowContent.prototype, "duration", void 0);
 __decorate([
     ManyToMany(() => List, list => list.contents, { cascade: [Cascade.ALL] }),
     __metadata("design:type", Object)
