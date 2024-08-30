@@ -7,11 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, Cascade, Property, ManyToOne, OneToMany } from "@mikro-orm/core";
+import { Entity, Cascade, Property, ManyToOne, OneToMany, Collection } from "@mikro-orm/core";
 import { User } from "../user/user.entity.js";
 import { ShowContent } from "./showContent.entity.js";
 import { Comment } from "./comment.entity.js";
 let Review = class Review {
+    constructor() {
+        this.comments = new Collection(this);
+    }
 };
 __decorate([
     Property({ nullable: false }),
@@ -31,7 +34,7 @@ __decorate([
 ], Review.prototype, "showReviewd", void 0);
 __decorate([
     OneToMany(() => Comment, comment => comment.commentReview, { cascade: [Cascade.ALL], nullable: true }),
-    __metadata("design:type", Array)
+    __metadata("design:type", Object)
 ], Review.prototype, "comments", void 0);
 Review = __decorate([
     Entity()

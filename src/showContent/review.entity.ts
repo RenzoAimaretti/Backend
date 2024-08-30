@@ -1,4 +1,4 @@
-import { Entity,Cascade, Property, ManyToOne, PrimaryKeyType, PrimaryKeyProp, ManyToMany, OneToMany } from "@mikro-orm/core";
+import { Entity,Cascade, Property, ManyToOne, PrimaryKeyType, PrimaryKeyProp, ManyToMany, OneToMany, Collection } from "@mikro-orm/core";
 import { User } from "../user/user.entity.js";
 import { ShowContent } from "./showContent.entity.js";
 import { Comment } from "./comment.entity.js";
@@ -18,5 +18,5 @@ export class Review {
     showReviewd!:ShowContent;
 
     @OneToMany(()=>Comment, comment=>comment.commentReview, {cascade:[Cascade.ALL],nullable:true})
-    comments!:Comment[];
+    comments =  new Collection<Comment>(this);
 }

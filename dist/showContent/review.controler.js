@@ -51,7 +51,7 @@ async function deleteOneReview(req, res) {
 async function getContentReviews(req, res) {
     try {
         const content = await findOneContent(req, res);
-        const reviews = await em.find(Review, { showReviewd: content }, { populate: ['reviewOwner'] });
+        const reviews = await em.find(Review, { showReviewd: content }, { populate: ['reviewOwner', 'comments'] });
         res.status(200).json({ message: 'Reviews found', data: reviews });
     }
     catch (error) {
