@@ -52,4 +52,14 @@ async function deleteOneReview(req:Request, res:Response){
         res.status(500).json({message:error.message})
     }
 }
-export { addOneReview, deleteOneReview}
+
+async function getContentReviews(req:Request,res:Response){
+    try{
+        const content = await findOneContent(req,res)
+        const reviews = await em.find(Review,{showReviewd:content},{populate:['reviewOwner']})
+        res.status(200).json({message:'Reviews found',data:reviews})
+    }catch(error:any){
+        res.status(500).json({message:error.message})
+    }
+}
+export { addOneReview, deleteOneReview, getContentReviews}

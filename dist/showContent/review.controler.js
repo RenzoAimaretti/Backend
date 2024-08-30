@@ -48,5 +48,15 @@ async function deleteOneReview(req, res) {
         res.status(500).json({ message: error.message });
     }
 }
-export { addOneReview, deleteOneReview };
+async function getContentReviews(req, res) {
+    try {
+        const content = await findOneContent(req, res);
+        const reviews = await em.find(Review, { showReviewd: content }, { populate: ['reviewOwner'] });
+        res.status(200).json({ message: 'Reviews found', data: reviews });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+export { addOneReview, deleteOneReview, getContentReviews };
 //# sourceMappingURL=review.controler.js.map
