@@ -10,7 +10,7 @@ listRouter.get('/:id',findOne);
 
 listRouter.post('/',addOne);
 
-listRouter.put('/:userId/:nameList',updateOne);
+listRouter.put('/:idList',updateOne);
 
 listRouter.put('/:idContent/:idList/addContent',addContent);
 

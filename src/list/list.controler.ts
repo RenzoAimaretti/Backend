@@ -90,7 +90,15 @@ async function deleteOne(req: Request, res: Response) {
 }
 
 function updateOne(req: Request, res: Response) {
-    throw Error('Not implemented yet');
+    try {
+        const id = Number.parseInt(req.params.idList);
+        const listToUpdate = em.getReference(List, id);
+        em.assign(listToUpdate, req.body);
+        em.flush();
+        res.status(200).json({ message: 'list updated', data: listToUpdate });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    };
 }
 
 export { findAll, findOne, addOne, deleteOne, updateOne, searchLists, addContent };

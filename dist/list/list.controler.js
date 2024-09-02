@@ -87,7 +87,17 @@ async function deleteOne(req, res) {
     }
 }
 function updateOne(req, res) {
-    throw Error('Not implemented yet');
+    try {
+        const id = Number.parseInt(req.params.idList);
+        const listToUpdate = em.getReference(List, id);
+        em.assign(listToUpdate, req.body);
+        em.flush();
+        res.status(200).json({ message: 'list updated', data: listToUpdate });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+    ;
 }
 export { findAll, findOne, addOne, deleteOne, updateOne, searchLists, addContent };
 //# sourceMappingURL=list.controler.js.map

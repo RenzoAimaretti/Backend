@@ -103,4 +103,13 @@ async function deleteOne (req:Request,res:Response){
     }
 };
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne}
+async function userLists(req:Request,res:Response){
+    try{
+        const id = Number.parseInt(req.params.id)
+        const user = await em.findOneOrFail(User, {id}, {populate:['lists']})
+        res.status(200).json({message:'user lists found',data:user.lists})
+    }
+    catch(error:any){
+        res.status(500).json({message:error.message})}
+}
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne, userLists}
