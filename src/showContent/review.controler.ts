@@ -32,8 +32,7 @@ async function addOneReview(req:Request,res:Response){
                 showReviewd:content,
                 comments:[],
             });
-            await em.persistAndFlush(newReview)
-            
+            await em.persistAndFlush(newReview)           
         }
         res.status(200).json({message:'Review created'})
     }catch(error:any){

@@ -27,7 +27,7 @@ async function searchLists(req: Request, res: Response) {
 
 async function addContent(req: Request, res:Response){
     try{
-        const listId = Number.parseInt(req.params.listId);
+        const listId = Number.parseInt(req.params.idList);
         const content = await findOneContent(req,res)
         const list = await em.findOneOrFail(List, { id: listId }, { populate: ['contents'] });
         if (content!=null) {
@@ -35,13 +35,13 @@ async function addContent(req: Request, res:Response){
             res.status(400).json({ message: 'content already in list' });
         }else{
             list.contents.add(content);
-            await em.flush();
+            await em.persistAndFlush(list);
         }
     }else{
         addOneContent(req,res)
         const content = await findOneContent(req,res) as ShowContent
         list.contents.add(content);
-        await em.flush();
+        await em.persistAndFlush(list);
     }
     res.status(200).json({message:'content added to list',data:list});  
 }catch(error:any){

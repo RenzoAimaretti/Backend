@@ -22,7 +22,7 @@ async function searchLists(req, res) {
 }
 async function addContent(req, res) {
     try {
-        const listId = Number.parseInt(req.params.listId);
+        const listId = Number.parseInt(req.params.idList);
         const content = await findOneContent(req, res);
         const list = await em.findOneOrFail(List, { id: listId }, { populate: ['contents'] });
         if (content != null) {
@@ -31,14 +31,14 @@ async function addContent(req, res) {
             }
             else {
                 list.contents.add(content);
-                await em.flush();
+                await em.persistAndFlush(list);
             }
         }
         else {
             addOneContent(req, res);
             const content = await findOneContent(req, res);
             list.contents.add(content);
-            await em.flush();
+            await em.persistAndFlush(list);
         }
         res.status(200).json({ message: 'content added to list', data: list });
     }
