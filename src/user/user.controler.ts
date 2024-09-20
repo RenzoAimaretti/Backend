@@ -169,4 +169,38 @@ async function followUser(req:Request, res:Response){
     }
 }
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser}
+async function unfollowUser(req:Request,res:Response){
+    try{
+        const userFollowerId=Number.parseInt(req.params.userId)
+        const userToUnfollowId=Number.parseInt(req.params.idF)
+        if(userFollowerId===userToUnfollowId){
+            throw new Error('No puedes dejar de seguirte a ti mismo')
+        }else{
+            const userFollower = await em.findOneOrFail(User, { id: userFollowerId },{populate:['friendsFrom']});
+            const userToUnfollow = await em.findOneOrFail(User, { id: userToUnfollowId },{populate:['friends']});
+            const isAlreadyFollowing = await em.count(User, {
+                id: userFollowerId,
+                friendsFrom: { id: userToUnfollowId }
+            });
+            console.log('hola')
+            if (isAlreadyFollowing === 0) {
+                throw new Error('No estas siguiendo a este usuario');
+            }
+ 
+            userFollower.friendsFrom.remove(userToUnfollow);
+            userToUnfollow.friends.remove(userFollower);
+            
+            em.persist(userToUnfollow)
+            em.persist(userFollower)
+            await em.flush()
+
+            res.status(201).json({message:'Dejado de seguir correctamente',data:{userToUnfollow,userFollower}})
+
+        }
+
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser}
