@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from "express";
 import { User } from "./user.entity.js";
 import { orm } from "../shared/db/orm.js";
 import bcrypt from 'bcrypt';
+import { error } from "console";
 const em = orm.em
 /*
 async function sanitizeUserInput(req: Request , res: Response , next:NextFunction) {
@@ -42,7 +43,9 @@ async function findOne(req: Request,res: Response){
             name: user.name,
             email: user.email,
             rangoCinefilo: user.rangoCinefilo,
-            subscription: user.subscription
+            subscription: user.subscription,
+            friends: user.friends,
+            friendsFrom: user.friendsFrom,
         };
         res.status(200).json({message:'user found',data:userWithoutPassword})
     } catch (error:any) {
@@ -135,4 +138,35 @@ async function searchUsers(req: Request, res: Response) {
     }
 }
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers}
+async function followUser(req:Request, res:Response){
+    try{
+        const userToFollowID=Number.parseInt(req.params.idF) 
+        const userFollowerID=Number.parseInt(req.params.userId)
+        if(userFollowerID===userToFollowID){
+            throw new Error('No puedes seguirte a ti mismo')
+        }else{
+            const userToFollow=await em.findOneOrFail(User,{id:userToFollowID})
+            const userFollower=await em.findOneOrFail(User,{id:userFollowerID})
+            // Validar que el usuario no esté siguiendo al otro usuario
+            const isAlreadyFollowing = await em.count(User, {
+                id: userFollowerID,
+                friendsFrom: { id: userToFollowID }
+            });
+
+            if (isAlreadyFollowing > 0) {
+                throw new Error('Ya estás siguiendo a este usuario');
+            }
+            userToFollow.friends.add(userFollower)
+            userFollower.friendsFrom.add(userToFollow)
+            em.persist(userToFollow)
+            em.persist(userFollower)
+            await em.flush()
+            res.status(201).json({message:'Seguido correctamente',data:{userToFollow,userFollower}})
+        }
+        
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser}
