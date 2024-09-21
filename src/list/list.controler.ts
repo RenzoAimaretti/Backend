@@ -68,15 +68,43 @@ async function findOne(req: Request, res: Response) {
     }
 }
 
-async function addOne(req: Request, res: Response) {
+async function addOne(req: Request, res: Response) { 
     try {
-        const list = em.create(List, req.body); // sanitización pendiente
-        await em.flush();
-        res.status(201).json({ message: 'list created', data: list });
+        const { contents, ...listData } = req.body;
+
+        const list = em.create(List, listData);
+
+
+        if (contents && contents.length > 0) {
+            for (let i = 0; i < contents.length; i++) {
+                const contentData = contents[i];
+
+                const mockReq = {
+                    ...req,
+                    body: contentData
+                } as Request;
+
+                let content = await findOneContent(mockReq, res);
+
+                if (!content) {
+                    await addOneContent(mockReq, res);
+                    content = await findOneContent(mockReq, res);
+                }
+                if(content){
+                console.log(content)
+                list.contents.add(content);
+                content.lists.add(list);}
+            }
+        }
+        await em.persistAndFlush(list);
+        res.status(201).json({ message: 'List and contents created', data: list });
     } catch (error: any) {
+
         res.status(500).json({ message: error.message });
     }    
 }
+
+
 
 async function deleteOne(req: Request, res: Response) {
     try {
