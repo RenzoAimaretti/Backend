@@ -7,10 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Cascade, Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { List } from "../list/list.entity.js";
 let ShowContent = class ShowContent {
     constructor() {
+        // Relación many-to-many con List, mapeada (no dueña)
         this.lists = new Collection(this);
     }
 };
@@ -23,7 +24,7 @@ __decorate([
     __metadata("design:type", String)
 ], ShowContent.prototype, "nameContent", void 0);
 __decorate([
-    ManyToMany(() => List, list => list.contents, { cascade: [Cascade.ALL] }),
+    ManyToMany(() => List, list => list.contents),
     __metadata("design:type", Object)
 ], ShowContent.prototype, "lists", void 0);
 ShowContent = __decorate([

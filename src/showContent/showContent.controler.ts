@@ -1,14 +1,21 @@
 import { Request,Response,NextFunction } from "express";
 import { orm } from "../shared/db/orm.js";
 import { ShowContent } from "./showContent.entity.js";
+import { create } from "domain";
 
 const em = orm.em
 
 async function findOneContent(req:Request,res:Response) {
     try {
+        if(req.params.idContent!==undefined){
         const idContent = Number.parseInt(req.params.idContent)
         const showContent = await em.findOneOrFail(ShowContent, {idContent}, {populate:['lists']})
-        return showContent as ShowContent
+        return showContent as ShowContent}
+        else{
+            const idContent = Number.parseInt(req.body.id)
+            const showContent = await em.findOneOrFail(ShowContent, {idContent}, {populate:['lists']})
+            return showContent as ShowContent
+        }
     } catch (error:any) {
         return null
     }
@@ -17,10 +24,18 @@ async function findOneContent(req:Request,res:Response) {
 
 async function addOneContent(req:Request,res:Response){
     try {
-        const showContent = new ShowContent()
-        showContent.idContent = Number.parseInt(req.params.idContent)
-        showContent.nameContent = req.body.nameContent
-        await em.persistAndFlush(showContent)
+        let showContent = new ShowContent();
+        if(req.params.idContent!==undefined){
+            showContent.idContent = Number.parseInt(req.params.idContent)
+            showContent.nameContent = req.body.nameContent      
+        } else {
+            showContent.idContent = Number.parseInt(req.body.id)
+            showContent.nameContent = req.body.title
+            console.log(req.body.title, req.body.id)
+        }
+        const createdContent = em.create(ShowContent, showContent)
+        console.log('createdContent',createdContent)
+        await em.persistAndFlush(createdContent)
     } catch (error:any) {
     }
 }

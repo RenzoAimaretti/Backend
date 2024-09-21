@@ -3,9 +3,16 @@ import { ShowContent } from "./showContent.entity.js";
 const em = orm.em;
 async function findOneContent(req, res) {
     try {
-        const idContent = Number.parseInt(req.params.idContent);
-        const showContent = await em.findOneOrFail(ShowContent, { idContent }, { populate: ['lists'] });
-        return showContent;
+        if (req.params.idContent !== undefined) {
+            const idContent = Number.parseInt(req.params.idContent);
+            const showContent = await em.findOneOrFail(ShowContent, { idContent }, { populate: ['lists'] });
+            return showContent;
+        }
+        else {
+            const idContent = Number.parseInt(req.body.id);
+            const showContent = await em.findOneOrFail(ShowContent, { idContent }, { populate: ['lists'] });
+            return showContent;
+        }
     }
     catch (error) {
         return null;
@@ -13,10 +20,19 @@ async function findOneContent(req, res) {
 }
 async function addOneContent(req, res) {
     try {
-        const showContent = new ShowContent();
-        showContent.idContent = Number.parseInt(req.params.idContent);
-        showContent.nameContent = req.body.nameContent;
-        await em.persistAndFlush(showContent);
+        let showContent = new ShowContent();
+        if (req.params.idContent !== undefined) {
+            showContent.idContent = Number.parseInt(req.params.idContent);
+            showContent.nameContent = req.body.nameContent;
+        }
+        else {
+            showContent.idContent = Number.parseInt(req.body.id);
+            showContent.nameContent = req.body.title;
+            console.log(req.body.title, req.body.id);
+        }
+        const createdContent = em.create(ShowContent, showContent);
+        console.log('createdContent', createdContent);
+        await em.persistAndFlush(createdContent);
     }
     catch (error) {
     }

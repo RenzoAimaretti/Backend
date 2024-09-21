@@ -71,27 +71,23 @@ async function findOne(req: Request, res: Response) {
 async function addOne(req: Request, res: Response) { 
     try {
         const { contents, ...listData } = req.body;
-
         const list = em.create(List, listData);
-
-
         if (contents && contents.length > 0) {
             for (let i = 0; i < contents.length; i++) {
                 const contentData = contents[i];
-
                 const mockReq = {
                     ...req,
                     body: contentData
                 } as Request;
-
                 let content = await findOneContent(mockReq, res);
-
-                if (!content) {
+                console.log('contenidos',content)
+                if (content == null) {
+                    console.log('entro -1')
                     await addOneContent(mockReq, res);
                     content = await findOneContent(mockReq, res);
                 }
                 if(content){
-                console.log(content)
+                console.log('contenidos sssssssssssssssssssssssssssssssssssssss',content)
                 list.contents.add(content);
                 content.lists.add(list);}
             }
@@ -99,7 +95,6 @@ async function addOne(req: Request, res: Response) {
         await em.persistAndFlush(list);
         res.status(201).json({ message: 'List and contents created', data: list });
     } catch (error: any) {
-
         res.status(500).json({ message: error.message });
     }    
 }

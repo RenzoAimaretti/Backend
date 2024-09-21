@@ -14,12 +14,8 @@ import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 let List = class List extends BaseEntity {
     constructor() {
         super(...arguments);
+        // Relación many-to-many con ShowContent, declarada como el dueño (side owning)
         this.contents = new Collection(this);
-        /*
-        @Property({nullable:true})
-        duration: ???
-        no se que tipo de dato es y todavia hay q pensar la implementacion
-        */
         this.followers = new Collection(this);
     }
 };
@@ -36,7 +32,7 @@ __decorate([
     __metadata("design:type", Object)
 ], List.prototype, "contents", void 0);
 __decorate([
-    ManyToOne(() => User, { nullable: false, autoincrement: false }),
+    ManyToOne(() => User, { nullable: false }),
     __metadata("design:type", Object)
 ], List.prototype, "owner", void 0);
 __decorate([

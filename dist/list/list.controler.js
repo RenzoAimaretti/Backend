@@ -77,12 +77,14 @@ async function addOne(req, res) {
                     body: contentData
                 };
                 let content = await findOneContent(mockReq, res);
-                if (!content) {
+                console.log('contenidos', content);
+                if (content == null) {
+                    console.log('entro -1');
                     await addOneContent(mockReq, res);
                     content = await findOneContent(mockReq, res);
                 }
                 if (content) {
-                    console.log(content);
+                    console.log('contenidos sssssssssssssssssssssssssssssssssssssss', content);
                     list.contents.add(content);
                     content.lists.add(list);
                 }
