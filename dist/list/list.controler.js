@@ -27,11 +27,12 @@ async function addContent(req, res) {
         const list = await em.findOneOrFail(List, { id: listId }, { populate: ['contents'] });
         if (content != null) {
             if (list.contents.contains(content)) {
-                res.status(400).json({ message: 'content already in list' });
+                return res.status(200).json({ message: 'Content already in list' });
             }
             else {
                 list.contents.add(content);
                 await em.persistAndFlush(list);
+                return res.status(200).json({ message: 'Content added to list', data: list });
             }
         }
         else {
@@ -39,11 +40,11 @@ async function addContent(req, res) {
             const content = await findOneContent(req, res);
             list.contents.add(content);
             await em.persistAndFlush(list);
+            return res.status(200).json({ message: 'New content added to list', data: list });
         }
-        res.status(200).json({ message: 'content added to list', data: list });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 }
 async function findAll(req, res) {
@@ -77,14 +78,11 @@ async function addOne(req, res) {
                     body: contentData
                 };
                 let content = await findOneContent(mockReq, res);
-                console.log('contenidos', content);
                 if (content == null) {
-                    console.log('entro -1');
                     await addOneContent(mockReq, res);
                     content = await findOneContent(mockReq, res);
                 }
                 if (content) {
-                    console.log('contenidos sssssssssssssssssssssssssssssssssssssss', content);
                     list.contents.add(content);
                     content.lists.add(list);
                 }

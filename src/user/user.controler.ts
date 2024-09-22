@@ -106,7 +106,7 @@ async function deleteOne (req:Request,res:Response){
 async function userLists(req:Request,res:Response){
     try{
         const id = Number.parseInt(req.params.id)
-        const user = await em.findOneOrFail(User, {id}, {populate:['lists']})
+        const user = await em.findOneOrFail(User, {id}, {populate:['lists','lists.contents']})
         res.status(200).json({message:'user lists found',data:user.lists})
     }
     catch(error:any){
