@@ -57,6 +57,8 @@ app.use('/api/dashboard',dashboardRouter)
 app.use('/api/review',contentRouter)
 
 
+
+
 await syncSchema() // solo en dev, NO SE DEBE USAR EN PRODUCCION
 
 app.listen(3000,()=>{
