@@ -203,4 +203,20 @@ async function unfollowUser(req:Request,res:Response){
     }
 }
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser}
+//metodo para verificar si un usuario ya sigue a otro y devolver una respuesta booleana
+async function isFollowing(req:Request,res:Response){
+    const userId=Number.parseInt(req.params.userId);
+    const userToCheckId=Number.parseInt(req.params.idF);
+    try{
+        const user=await em.findOneOrFail(User,{id:userId},{populate:['friendsFrom']})
+        const userToCheck=await em.findOneOrFail(User,{id:userToCheckId},{populate:['friends']})
+        const isFollowing= user.friendsFrom.contains(userToCheck)
+        console.log(isFollowing)
+
+        res.status(200).json({message:'El usuario ya lo sigue: ',data:isFollowing})
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser,isFollowing}
