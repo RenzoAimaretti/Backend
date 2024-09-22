@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from "express";
 import { User } from "./user.entity.js";
 import { orm } from "../shared/db/orm.js";
 import bcrypt from 'bcrypt';
+import { error } from "console";
 const em = orm.em
 /*
 async function sanitizeUserInput(req: Request , res: Response , next:NextFunction) {
@@ -42,7 +43,9 @@ async function findOne(req: Request,res: Response){
             name: user.name,
             email: user.email,
             rangoCinefilo: user.rangoCinefilo,
-            subscription: user.subscription
+            subscription: user.subscription,
+            friends: user.friends,
+            friendsFrom: user.friendsFrom,
         };
         res.status(200).json({message:'user found',data:userWithoutPassword})
     } catch (error:any) {
@@ -74,23 +77,37 @@ async function findOneDashboard(req: Request,res: Response){
 // };
 
 //modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
-async function updateOne(req: Request,res: Response){
+async function updateOne(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const userToUpdate = await em.findOneOrFail(User, {id})
-        //encripta el password del usuario
-        if(req.body.password==null){
-            req.body.password=userToUpdate.password
+        const id = Number.parseInt(req.params.id);
+        console.log('ID del usuario a actualizar:', id); // Log para verificar el ID
+
+        const userToUpdate = await em.findOneOrFail(User, { id });
+        console.log('Usuario antes de actualizar:', userToUpdate); // Log para verificar los datos del usuario antes de actualizar
+
+        // Encripta la contraseña solo si se proporciona una nueva
+        if (req.body.password) {
+            req.body.password = await bcrypt.hash(req.body.password, 10);
+            console.log('Contraseña encriptada:', req.body.password); // Log para verificar la nueva contraseña encriptada
         }
-        req.body.password= await bcrypt.hash(req.body.password, 10);
-        em.assign(userToUpdate, req.body)//sani
-        await em.flush()
-        res.status(200).json({message:'user updated', data:userToUpdate})
-    } catch (error:any) {
-        res.status(500).json({message:error.message})
+
+        // Asigna solo los campos que existen y son válidos
+        const updateData: Partial<User> = {};
+        if (req.body.name) updateData.name = req.body.name;
+        if (req.body.password) updateData.password = req.body.password;
+
+        console.log('Datos para actualizar:', updateData); // Log para verificar los datos que se van a actualizar
+
+        em.assign(userToUpdate, updateData);
+        await em.flush();
+
+        console.log('Usuario después de actualizar:', userToUpdate); // Log para verificar los datos del usuario después de actualizar
+        res.status(200).json({ message: 'user updated', data: userToUpdate });
+    } catch (error: any) {
+        console.error('Error actualizando el usuario:', error.message); // Log para errores
+        res.status(500).json({ message: error.message });
     }
 }
-
 //borrar un character
 async function deleteOne (req:Request,res:Response){
     try {
@@ -102,5 +119,104 @@ async function deleteOne (req:Request,res:Response){
         res.status(500).json({message: error.message})
     }
 };
+async function searchUsers(req: Request, res: Response) {
+    try {
+        const query = req.query.name as string; // Nombre del parámetro de consulta
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne}
+        if (typeof query === 'string' && query.trim()) {
+            // Buscar usuarios cuyo nombre de usuario contenga el valor de 'query'
+            const users = await em.find(User, {
+                name: { $like: `%${query}%` } 
+            });
+
+            res.status(200).json({ message: 'Users found', data: users });
+        } else {
+            res.status(400).json({ message: 'Invalid query parameter' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+async function followUser(req:Request, res:Response){
+    try{
+        const userToFollowID=Number.parseInt(req.params.idF) 
+        const userFollowerID=Number.parseInt(req.params.userId)
+        if(userFollowerID===userToFollowID){
+            throw new Error('No puedes seguirte a ti mismo')
+        }else{
+            const userToFollow=await em.findOneOrFail(User,{id:userToFollowID})
+            const userFollower=await em.findOneOrFail(User,{id:userFollowerID})
+            // Validar que el usuario no esté siguiendo al otro usuario
+            const isAlreadyFollowing = await em.count(User, {
+                id: userFollowerID,
+                friendsFrom: { id: userToFollowID }
+            });
+
+            if (isAlreadyFollowing > 0) {
+                throw new Error('Ya estás siguiendo a este usuario');
+            }
+            userToFollow.friends.add(userFollower)
+            userFollower.friendsFrom.add(userToFollow)
+            em.persist(userToFollow)
+            em.persist(userFollower)
+            await em.flush()
+            res.status(201).json({message:'Seguido correctamente',data:{userToFollow,userFollower}})
+        }
+        
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+async function unfollowUser(req:Request,res:Response){
+    try{
+        const userFollowerId=Number.parseInt(req.params.userId)
+        const userToUnfollowId=Number.parseInt(req.params.idF)
+        if(userFollowerId===userToUnfollowId){
+            throw new Error('No puedes dejar de seguirte a ti mismo')
+        }else{
+            const userFollower = await em.findOneOrFail(User, { id: userFollowerId },{populate:['friendsFrom']});
+            const userToUnfollow = await em.findOneOrFail(User, { id: userToUnfollowId },{populate:['friends']});
+            const isAlreadyFollowing = await em.count(User, {
+                id: userFollowerId,
+                friendsFrom: { id: userToUnfollowId }
+            });
+            console.log('hola')
+            if (isAlreadyFollowing === 0) {
+                throw new Error('No estas siguiendo a este usuario');
+            }
+ 
+            userFollower.friendsFrom.remove(userToUnfollow);
+            userToUnfollow.friends.remove(userFollower);
+            
+            em.persist(userToUnfollow)
+            em.persist(userFollower)
+            await em.flush()
+
+            res.status(201).json({message:'Dejado de seguir correctamente',data:{userToUnfollow,userFollower}})
+
+        }
+
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+//metodo para verificar si un usuario ya sigue a otro y devolver una respuesta booleana
+async function isFollowing(req:Request,res:Response){
+    const userId=Number.parseInt(req.params.userId);
+    const userToCheckId=Number.parseInt(req.params.idF);
+    try{
+        const user=await em.findOneOrFail(User,{id:userId},{populate:['friendsFrom']})
+        const userToCheck=await em.findOneOrFail(User,{id:userToCheckId},{populate:['friends']})
+        const isFollowing= user.friendsFrom.contains(userToCheck)
+        console.log(isFollowing)
+
+        res.status(200).json({message:'El usuario ya lo sigue: ',data:isFollowing})
+    }catch(error:any){
+        res.status(500).json({message: error.message})
+    }
+}
+
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser,isFollowing}
