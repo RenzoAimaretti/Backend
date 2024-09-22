@@ -11,6 +11,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser'
 import jwt from "jsonwebtoken";
 import { dashboardRouter } from "./shared/dashboard.routes.js";
+import { contentRouter } from "./showContent/content.routes.js";
 
 const app=express()
 app.use(express.json())
@@ -53,6 +54,8 @@ app.use('/api/rangos', rangoRouter)
 app.use('/api/subscription',subscriptionRouter) // /api/users/subscription?
 app.use('/api/auth', authRouter)
 app.use('/api/dashboard',dashboardRouter)
+app.use('/api/review',contentRouter)
+
 
 
 
