@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addOneReview,deleteOneReview,getContentReviews } from "./review.controler.js";
+import { addOneReview,deleteOneReview,editReview,getContentReviews } from "./review.controler.js";
 import { addOneComment, deleteOneComment, getAllComments } from "./comment.controler.js";
 
 export const contentRouter=Router();
@@ -15,3 +15,5 @@ contentRouter.post("/comment/:idContent/:id/:idCommentOwner",addOneComment)
 contentRouter.get("/comment/:idContent/:id",getAllComments)
 
 contentRouter.delete("/comment/:idContent/:id/:idCommentOwner",deleteOneComment)
+
+contentRouter.put('/:idContent/:id',editReview)
