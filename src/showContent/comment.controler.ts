@@ -38,7 +38,7 @@ async function getAllComments(req:Request,res:Response){
         const reviewOwner= Number.parseInt(req.params.id);
         const showReviewd = await findOneContent(req,res) as ShowContent
         const review= await em.findOneOrFail(Review, {reviewOwner, showReviewd});
-        const comments = await em.find(Comment,{commentReview:review},{populate:['commentOwner']})
+        const comments = await em.find(Comment, { commentReview: review }, { populate: ['commentOwner', 'commentReview.reviewOwner'] });
         res.status(200).json({message:'Comments found',data:comments})
     }catch(error:any){
         res.status(500).json({message:error.message})
