@@ -56,10 +56,24 @@ async function deleteOneReview(req:Request, res:Response){
 async function getContentReviews(req:Request,res:Response){
     try{
         const content = await findOneContent(req,res)
-        const reviews = await em.find(Review,{showReviewd:content},{populate:['reviewOwner','comments']})
+        const reviews = await em.find(Review,{showReviewd:content},{populate:['reviewOwner','comments.commentReview.reviewOwner']})
         res.status(200).json({message:'Reviews found',data:reviews})
     }catch(error:any){
         res.status(500).json({message:error.message})
     }
 }
-export { addOneReview, deleteOneReview, getContentReviews}
+
+async function editReview(req:Request,res:Response){
+    try{
+        const reviewOwner= Number.parseInt(req.params.id);
+        const showReviewd = await findOneContent(req,res) as ShowContent
+        const review= await em.findOneOrFail(Review, {reviewOwner, showReviewd});
+        review.rating = req.body.rating;
+        review.description = req.body.description;
+        await em.flush();
+        res.status(200).json({message:'review edited',data:review})
+    }catch(error:any){
+        res.status(500).json({message:error.message})
+    }
+}
+export { addOneReview, deleteOneReview, getContentReviews, editReview}

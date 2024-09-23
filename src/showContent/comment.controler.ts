@@ -38,7 +38,7 @@ async function getAllComments(req:Request,res:Response){
         const reviewOwner= Number.parseInt(req.params.id);
         const showReviewd = await findOneContent(req,res) as ShowContent
         const review= await em.findOneOrFail(Review, {reviewOwner, showReviewd});
-        const comments = await em.find(Comment,{commentReview:review},{populate:['commentOwner']})
+        const comments = await em.find(Comment, { commentReview: review }, { populate: ['commentOwner', 'commentReview.reviewOwner'] });
         res.status(200).json({message:'Comments found',data:comments})
     }catch(error:any){
         res.status(500).json({message:error.message})
@@ -59,4 +59,20 @@ async function deleteOneComment(req:Request,res:Response){
     }
 }
 
-export { addOneComment,getAllComments,deleteOneComment }
+async function editComment(req:Request,res:Response){
+    try{
+        const reviewOwner= Number.parseInt(req.params.id);
+        const commentOwner= Number.parseInt(req.params.idCommentOwner);
+        const showReviewd = await findOneContent(req,res) as ShowContent
+        const commentReview= await em.findOneOrFail(Review, {reviewOwner, showReviewd}); 
+        const comment= await em.findOneOrFail(Comment, {commentOwner, commentReview});
+        comment.comment=req.body.comment;
+        await em.persistAndFlush(comment);
+        res.status(200).json({message:'Comment edited',data:comment})
+    }catch(error:any){
+        res.status(500).json({message:error.message})
+    }
+}
+
+
+export { addOneComment,getAllComments,deleteOneComment,editComment }
