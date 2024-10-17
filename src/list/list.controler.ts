@@ -110,16 +110,55 @@ async function deleteOne(req: Request, res: Response) {
     }
 }
 
-function updateOne(req: Request, res: Response) {
+async function updateOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.idList);
-        const listToUpdate = em.getReference(List, id);
-        em.assign(listToUpdate, req.body);
-        em.flush();
-        res.status(200).json({ message: 'list updated', data: listToUpdate });
+        const listToUpdate = await em.findOneOrFail(List, { id }, { populate: ['contents'] });
+        
+        const contents = req.body.contents;
+        console.log("Contenidos a agregar:", contents);
+        if (contents && contents.length > 0) {
+            listToUpdate.contents.removeAll();
+            for (const contentData of contents) {
+                console.log("Procesando contenido:", contentData);
+                const mockReq = { body: contentData } as Request;
+                console.log("mock req visualizacion",mockReq)
+                let content = await findOneContent(mockReq, res);
+                console.log("el contenido que se encontro es:: ",content)
+                if (!content) {
+                    await addOneContent(mockReq, res);
+                    content = await findOneContent(mockReq, res);
+                }
+                if (content) {
+                    console.log("Agregando contenido a la lista:", content);
+                    listToUpdate.contents.add(content);
+                    content.lists.add(listToUpdate); 
+                    await em.persist(content);
+                } else {
+                    console.log("No se pudo agregar el contenido:", contentData);
+                }
+            }
+        } else {
+            console.log("No se proporcionaron contenidos en el body.");
+        }
+
+        // Actualizar otros campos de la lista
+        em.assign(listToUpdate, {
+            nameList: req.body.nameList, 
+            descriptionList: req.body.descriptionList
+        });
+
+        // Persistir y flush en la base de datos
+        await em.persistAndFlush(listToUpdate);
+
+        res.status(200).json({ message: 'List updated', data: listToUpdate });
+
     } catch (error: any) {
         res.status(500).json({ message: error.message });
-    };
+    }
 }
+
+
+
 
 export { findAll, findOne, addOne, deleteOne, updateOne, searchLists, addContent };

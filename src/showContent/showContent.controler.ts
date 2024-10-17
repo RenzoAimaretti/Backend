@@ -7,12 +7,16 @@ const em = orm.em
 
 async function findOneContent(req:Request,res:Response) {
     try {
+        console.log("body que llega al find one content",req.body)
+        console.log("los parametros que llegan sonnnn:::",req.params.idContent)
         if(req.params.idContent!==undefined){
         const idContent = Number.parseInt(req.params.idContent)
         const showContent = await em.findOneOrFail(ShowContent, {idContent}, {populate:['lists']})
         return showContent as ShowContent}
-        else{
+        if(req.params.idContent==undefined || req.body.idContent!=null){
+            console.log("entroooooo al else")
             const idContent = Number.parseInt(req.body.id)
+            console.log("el id content que tenemos en el find one content",idContent)
             const showContent = await em.findOneOrFail(ShowContent, {idContent}, {populate:['lists']})
             return showContent as ShowContent
         }
