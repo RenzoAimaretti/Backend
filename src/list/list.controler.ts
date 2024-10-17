@@ -117,6 +117,7 @@ async function updateOne(req: Request, res: Response) {
         const contents = req.body.contents;
         if (contents && contents.length > 0) {
             listToUpdate.contents.removeAll();
+            await em.persistAndFlush(listToUpdate);
             console.log("lista a borrar",listToUpdate);
             console.log("--------------------")
             for (const contentData of contents) {
