@@ -114,45 +114,36 @@ async function updateOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.idList);
         const listToUpdate = await em.findOneOrFail(List, { id }, { populate: ['contents'] });
-        
         const contents = req.body.contents;
-        console.log("Contenidos a agregar:", contents);
         if (contents && contents.length > 0) {
             listToUpdate.contents.removeAll();
+            console.log("lista a borrar",listToUpdate);
+            console.log("--------------------")
             for (const contentData of contents) {
-                console.log("Procesando contenido:", contentData);
-                const mockReq = { body: contentData } as Request;
-                console.log("mock req visualizacion",mockReq)
-                let content = await findOneContent(mockReq, res);
-                console.log("el contenido que se encontro es:: ",content)
+                const mockReq = { ...req, body: contentData } as Request;
+                let content = await findOneContent(mockReq, res) as ShowContent;
+                console.log("el contenido que se devuelve es",content)
                 if (!content) {
                     await addOneContent(mockReq, res);
-                    content = await findOneContent(mockReq, res);
+                    content = await findOneContent(mockReq, res) as ShowContent;
                 }
                 if (content) {
-                    console.log("Agregando contenido a la lista:", content);
+                    console.log("entroo nashe")
                     listToUpdate.contents.add(content);
-                    content.lists.add(listToUpdate); 
-                    await em.persist(content);
+                    await em.persistAndFlush(listToUpdate);
+                    console.log("lista modificada:",listToUpdate)
                 } else {
-                    console.log("No se pudo agregar el contenido:", contentData);
                 }
             }
         } else {
             console.log("No se proporcionaron contenidos en el body.");
         }
-
-        // Actualizar otros campos de la lista
         em.assign(listToUpdate, {
             nameList: req.body.nameList, 
             descriptionList: req.body.descriptionList
         });
-
-        // Persistir y flush en la base de datos
-        await em.persistAndFlush(listToUpdate);
-
+        em.flush()
         res.status(200).json({ message: 'List updated', data: listToUpdate });
-
     } catch (error: any) {
         res.status(500).json({ message: error.message });
     }

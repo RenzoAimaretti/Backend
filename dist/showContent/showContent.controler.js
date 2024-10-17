@@ -4,17 +4,18 @@ const em = orm.em;
 async function findOneContent(req, res) {
     try {
         console.log("body que llega al find one content", req.body);
-        console.log("los parametros que llegan sonnnn:::", req.params.idContent);
+        console.log("los parametros que llegan sonnnn:::", req.params);
         if (req.params.idContent !== undefined) {
             const idContent = Number.parseInt(req.params.idContent);
             const showContent = await em.findOneOrFail(ShowContent, { idContent }, { populate: ['lists'] });
             return showContent;
         }
-        if (req.params.idContent == undefined || req.body.idContent != null) {
+        else {
             console.log("entroooooo al else");
             const idContent = Number.parseInt(req.body.id);
             console.log("el id content que tenemos en el find one content", idContent);
             const showContent = await em.findOneOrFail(ShowContent, { idContent }, { populate: ['lists'] });
+            console.log("el show content que tenemos en el find one content", showContent);
             return showContent;
         }
     }
