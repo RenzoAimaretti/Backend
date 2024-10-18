@@ -25,15 +25,20 @@ async function findOne(req: Request,res: Response){
 };
 
 
-async function addOne(req: Request,res: Response){
+async function addOne(req: Request, res: Response) {
+    console.log('Datos recibidos para crear la suscripción:', req.body); // Log de los datos recibidos
     try {
-        const subscription = em.create(Subscription, req.body)
-        await em.flush()
-        res.status(201).json({message:'subscription created', data:subscription})
-    } catch (error:any) {
-        res.status(500).json({message: error.message})  
+        const subscription = em.create(Subscription, req.body);
+        em.persist(subscription); // Asegúrate de persistir el objeto
+        await em.flush();
+        console.log('Subscripción creada en la base de datos:', subscription); // Log después de la creación
+        res.status(201).json({ message: 'subscription created', data: subscription });
+    } catch (error: any) {
+        console.error('Error al crear la subscripción:', error); // Log del error
+        res.status(500).json({ message: error.message });
     }    
-};
+}
+
 
 
 async function updateOne(req: Request,res: Response){

@@ -9,7 +9,7 @@ import {
   Rel,
   PrimaryKey,
 } from "@mikro-orm/core";
-import { RangoCinefilo } from "./rangoCinefilo.entity.js";
+import { RangoCinefilo } from "../rangoCinefilo/rangoCinefilo.entity.js";
 import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { List } from "../list/list.entity.js";
 import { Subscription } from "../subscription/subscription.entity.js";
