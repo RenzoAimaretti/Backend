@@ -1,5 +1,5 @@
 import { Request,Response,NextFunction } from "express";
-import { RangoCinefilo } from "./rangoCinefilo.entity";
+import { RangoCinefilo } from "./rangoCinefilo.entity.js";
 import { orm } from "../shared/db/orm.js";
 
 const em = orm.em
