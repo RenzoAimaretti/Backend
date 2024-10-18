@@ -20,7 +20,8 @@ async function register(req: Request, res: Response) {
         password:password,
         rangoCinefilo: 1,
         followingLists: [],
-        subscription: 1
+        subscription: 1,
+        isAdmin:false 
     });
 
     await em.persistAndFlush(user);
@@ -45,7 +46,8 @@ async function login(req: Request, res: Response) {
             name:user.name,
             email:user.email,
             rangoCinefilo:user.rangoCinefilo,
-            subscription:user.subscription},
+            subscription:user.subscription,
+            isAdmin: user.isAdmin },
 
             'clavesecreta-de-prueba-provisional-n$@#131238s91',
 

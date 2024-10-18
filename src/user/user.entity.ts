@@ -18,6 +18,9 @@ export class User extends BaseEntity{
         @Property({nullable:false})
         password!:string
 
+        @Property()
+        isAdmin: boolean = false
+
         @ManyToOne(()=>RangoCinefilo,{nullable:false})
         rangoCinefilo!: Rel<RangoCinefilo>
 
