@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, addOne, updateOne } from "./rangoCinefilo.controler.js";
+import { findAll, findOne, deleteOne, addOne, updateOne, searchRangoCinefilo } from "./rangoCinefilo.controler.js";
 
 export const rangoRouter=Router();
+
+rangoRouter.get('/search', searchRangoCinefilo);
 
 rangoRouter.get('/',findAll);
 
