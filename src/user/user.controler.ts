@@ -219,4 +219,14 @@ async function isFollowing(req:Request,res:Response){
     }
 }
 
-export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser,isFollowing}
+    async function userLists(req:Request,res:Response){
+    try{
+        const id = Number.parseInt(req.params.id)
+        const user = await em.findOneOrFail(User, {id}, {populate:['lists','lists.contents']})
+        res.status(200).json({message:'user lists found',data:user.lists})
+    }
+    catch(error:any){
+        res.status(500).json({message:error.message})}
+    }
+export { findAll, findOne,findOneDashboard, updateOne, deleteOne,searchUsers, followUser,unfollowUser,isFollowing, userLists}
+
