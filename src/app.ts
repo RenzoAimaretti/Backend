@@ -13,6 +13,7 @@ import jwt from "jsonwebtoken";
 import { dashboardRouter } from "./shared/dashboard.routes.js";
 import { contentRouter } from "./showContent/content.routes.js";
 import { suggestionRouter } from "./suggestions/suggestion.routes.js";
+import { adminRouter } from "./admin/admin.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -58,6 +59,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/review", contentRouter);
 app.use("/api/suggestions", suggestionRouter);
+app.use("/api/admin", adminRouter);
 
 await syncSchema(); // solo en dev, NO SE DEBE USAR EN PRODUCCION
 
