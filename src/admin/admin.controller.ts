@@ -16,7 +16,7 @@ async function findOne(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
     const admin = await em.findOneOrFail(Admin, { id });
-    res.status(200).json({ message: "admin found", data: admin });
+    res.status(200).json(admin);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
