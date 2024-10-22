@@ -24,16 +24,15 @@ dashboardRouter.get("/", verifyToken, async (req, res) => {
 });
 
 dashboardRouter.get("/admin", verifyToken, async (req, res) => {
-  res.status(200).send({ message: "Admin dashboard" });
-  // try {
-  //   const admin = await findOneAdminDashboard(req, res);
-  //   if (!admin) {
-  //     return res.status(404).send({ message: "Admin not found." });
-  //   }
-  //   return res.status(200).json(admin);
-  // } catch (error) {
-  //   return res
-  //     .status(500)
-  //     .send({ message: "There was a problem retrieving the admin data." });
-  // }
+  try {
+    const admin = await findOneAdminDashboard(req, res);
+    if (!admin) {
+      return res.status(404).send({ message: "Admin not found." });
+    }
+    return res.status(200).json(admin);
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "There was a problem retrieving the admin data." });
+  }
 });
