@@ -18,6 +18,7 @@ async function findAll(req: Request, res: Response) {
 async function addOne(req: Request, res: Response) {
   try {
     const suggestion = em.create(Suggestion, req.body);
+    suggestion.estado = "pendiente";
     await em.flush();
     res.status(201).json({ message: "suggestion created", data: suggestion });
   } catch (error: any) {
@@ -36,6 +37,8 @@ async function findOne(req: Request, res: Response) {
 }
 
 async function updateOne(req: Request, res: Response) {
+  //se puede actualizar todo
+  //pero vamos a limitar a que solo se pueda actualizar el estado y el comentario del admin
   try {
     const id = Number.parseInt(req.params.id);
     const suggestionToUpdate = await em.getReference(Suggestion, id);
