@@ -1,7 +1,7 @@
-import 'express-session';
-import { User } from '../../user/user.entity';
+import "express-session";
+import { User } from "../../user/user.entity";
 
-declare module 'express-session' {
+declare module "express-session" {
   interface SessionData {
     user: User | null;
   }
