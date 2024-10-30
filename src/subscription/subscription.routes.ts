@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, addOne, updateOne } from "./subscription.controler.js";//sanitizeUserInput
+import { findAll, findOne, deleteOne, addOne, updateOne, searchSubscription } from "./subscription.controler.js";//sanitizeUserInput
 
 export const subscriptionRouter=Router();
+
+subscriptionRouter.get('/search', searchSubscription);
 
 subscriptionRouter.get('/',findAll);
 

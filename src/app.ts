@@ -5,7 +5,7 @@ import "reflect-metadata";
 import { orm, syncSchema } from "./shared/db/orm.js";
 import { RequestContext } from "@mikro-orm/core";
 import { subscriptionRouter } from "./subscription/subscription.routes.js";
-import { rangoRouter } from "./user/rangoCinefilo.routes.js";
+import { rangoRouter } from "./rangoCinefilo/rangoCinefilo.routes.js";
 import { authRouter } from "./shared/session/auth.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -14,6 +14,7 @@ import { dashboardRouter } from "./shared/dashboard.routes.js";
 import { contentRouter } from "./showContent/content.routes.js";
 import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
+
 
 const app = express();
 app.use(express.json());
