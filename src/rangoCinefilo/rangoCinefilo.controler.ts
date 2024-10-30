@@ -5,6 +5,25 @@ import { orm } from "../shared/db/orm.js";
 const em = orm.em
 
 
+async function searchRangoCinefilo(req: Request, res: Response) {
+    try {
+        const query = req.query.nameRango as string;
+
+        if (typeof query === 'string' && query.trim()) {
+            
+            const rangoscinefilos = await em.find(RangoCinefilo, {
+                nameRango: { $like: `%${query}%` } 
+            }, { populate: [] });
+
+            res.status(200).json({ message: 'Rangos cinefilos found', data: rangoscinefilos });
+        } else {
+            res.status(400).json({ message: 'Invalid query parameter' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 async function findAll(req: Request,res: Response){
     try {
         const range= await em.find(RangoCinefilo,{})
@@ -39,7 +58,7 @@ async function addOne(req: Request,res: Response){
     }
 };
 
-//modificar un character(put(idempotente), sin importar las veces que se ejecute el resultado ha de ser el mismo)
+
 async function updateOne(req: Request,res: Response){
     try {
         const id = Number.parseInt(req.params.id)
@@ -52,7 +71,7 @@ async function updateOne(req: Request,res: Response){
     }
 };
 
-//borrar un character
+
 async function deleteOne (req:Request,res:Response){
     try {
         const id = Number.parseInt(req.params.id)
@@ -63,4 +82,4 @@ async function deleteOne (req:Request,res:Response){
         res.status(500).json({message: error.message})
     }
 };
-export { findAll, findOne, addOne, updateOne, deleteOne}
+export { findAll, findOne, addOne, updateOne, deleteOne,searchRangoCinefilo}
