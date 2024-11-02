@@ -1,6 +1,7 @@
 import { Request,Response,NextFunction } from "express";
 import { RangoCinefilo } from "./rangoCinefilo.entity.js";
 import { orm } from "../shared/db/orm.js";
+import { User } from "../user/user.entity.js";
 
 const em = orm.em
 
@@ -34,7 +35,7 @@ async function findAll(req: Request,res: Response){
     }
 };
 
-//consultar por id
+
 async function findOne(req: Request,res: Response){
     try {
         const id = Number.parseInt(req.params.id)
@@ -72,14 +73,29 @@ async function updateOne(req: Request,res: Response){
 };
 
 
-async function deleteOne (req:Request,res:Response){
+async function deleteOne(req: Request, res: Response) {
     try {
-        const id = Number.parseInt(req.params.id)
-        const range = em.getReference(RangoCinefilo, id)
-        await em.removeAndFlush(range)
-        res.status(200).json({message:'range delated', data:range})
-    } catch (error:any) {
-        res.status(500).json({message: error.message})
+        const id = Number.parseInt(req.params.id);
+        const rangoAEliminar = await em.findOneOrFail(RangoCinefilo, { id });
+        const rangoPredeterminado = await em.findOneOrFail(RangoCinefilo, { id: 1 });
+        const usuariosConRango = await em.find(User, { rangoCinefilo: rangoAEliminar });
+        let movedUsers = false;
+        if (usuariosConRango.length > 0) {
+            movedUsers = true;
+            usuariosConRango.forEach(usuario => {
+                usuario.rangoCinefilo = rangoPredeterminado;
+            });
+            await em.flush(); 
+        }
+        await em.removeAndFlush(rangoAEliminar);
+        const message = movedUsers 
+            ? 'Rango eliminado con éxito y los usuarios que lo tenían fueron reasignados al rango predeterminado.'
+            : 'Rango eliminado con éxito.';
+        res.status(200).json({ message, data: rangoAEliminar });
+    } catch (error: any) {
+        console.error('Error al eliminar el rango cinefilo:', error);
+        res.status(500).json({ message: 'Error al eliminar el rango cinefilo. ' + error.message });
     }
-};
+}
+
 export { findAll, findOne, addOne, updateOne, deleteOne,searchRangoCinefilo}
