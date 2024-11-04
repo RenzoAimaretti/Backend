@@ -14,7 +14,7 @@ import { dashboardRouter } from "./shared/dashboard.routes.js";
 import { contentRouter } from "./showContent/content.routes.js";
 import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
-
+import { initDb } from "./shared/db/initDb.js";
 
 const app = express();
 app.use(express.json());
@@ -63,6 +63,8 @@ app.use("/api/suggestions", suggestionRouter);
 app.use("/api/admin", adminRouter);
 
 await syncSchema(); // solo en dev, NO SE DEBE USAR EN PRODUCCION
+//inicializado de la bd
+await initDb();
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000 http://localhost:3000/");
