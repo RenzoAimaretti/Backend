@@ -5,15 +5,11 @@ import {
   ManyToOne,
   ManyToMany,
   OneToMany,
-  Property,
   Rel,
-  PrimaryKey,
 } from "@mikro-orm/core";
 import { RangoCinefilo } from "../rangoCinefilo/rangoCinefilo.entity.js";
-import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 import { List } from "../list/list.entity.js";
 import { Subscription } from "../subscription/subscription.entity.js";
-import { Comment } from "../showContent/comment.entity.js";
 import { Account } from "../account/account.entity.js";
 @Entity()
 export class User extends Account {

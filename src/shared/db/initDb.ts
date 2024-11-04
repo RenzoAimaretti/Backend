@@ -3,7 +3,7 @@ import { User } from "../../user/user.entity.js";
 import { RangoCinefilo } from "../../rangoCinefilo/rangoCinefilo.entity.js";
 import { Subscription } from "../../subscription/subscription.entity.js";
 import { Admin } from "../../admin/admin.entity.js";
-
+import bcrypt from "bcrypt";
 // Esta funcion es la encargada de inicializar la base de datos de ser necesario
 
 export async function initDb() {
@@ -20,26 +20,72 @@ export async function initDb() {
       nameRango: "Aficionado",
       descriptionRango: "Aficionado al cine",
     });
-    em.persist(aficionado);
-    await em.flush();
+    await em.persistAndFlush(aficionado);
     const cineasta = em.create(RangoCinefilo, {
       nameRango: "Cineasta",
       descriptionRango: "Cineasta de culto",
     });
-    em.persist(cineasta);
-    await em.flush();
+    em.persistAndFlush(cineasta);
   }
 
   if (subscriptions.length === 0) {
     console.log("Subscripciones no encontradas, creando Subscripciones");
     const basic = em.create(Subscription, { name: "Basica", cantidadSem: 2 });
-    em.persist(basic);
-    await em.flush();
+    await em.persistAndFlush(basic);
     const premium = em.create(Subscription, {
       name: "Premium",
       cantidadSem: 7,
     });
-    em.persist(premium);
-    await em.flush();
+    await em.persistAndFlush(premium);
+  }
+
+  if (users.length === 0) {
+    console.log("Usuarios no encontrados, creando Usuarios");
+    const user1Password = await bcrypt.hash("12341234", 10);
+    const user1 = em.create(User, {
+      name: "cineFan123",
+      email: "cinefan@gmail.com",
+      password: user1Password,
+      rangoCinefilo: 1,
+      subscription: 1,
+      followingLists: [],
+    });
+
+    await em.persistAndFlush(user1);
+
+    const user2Password = await bcrypt.hash("234ab734", 10);
+    const user2 = em.create(User, {
+      name: "cineFan456",
+      email: "cinecine@gmail.com",
+      password: user2Password,
+      rangoCinefilo: 1,
+      subscription: 2,
+      followingLists: [],
+    });
+    await em.persistAndFlush(user2);
+    const user3Password = await bcrypt.hash("CdnI29n1", 10);
+    const user3 = em.create(User, {
+      name: "cineFan789",
+      email: "cinefanatico@gmail.com",
+      password: user3Password,
+      rangoCinefilo: 2,
+      subscription: 1,
+      followingLists: [],
+    });
+
+    await em.persistAndFlush(user3);
+  }
+
+  if (admins.length === 0) {
+    console.log("Admins no encontrados, creando Admins");
+    const adminPassword = await bcrypt.hash("adminroot", 10);
+    const admin = em.create(Admin, {
+      name: "MartinAdmin",
+      email: "madmin@gmail.com",
+      password: adminPassword,
+      adminName: "Martin",
+      adminStatus: true,
+    });
+    await em.persistAndFlush(admin);
   }
 }
