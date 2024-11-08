@@ -3,7 +3,7 @@ import { User } from "../user/user.entity.js";
 import { orm } from "../shared/db/orm.js";
 import { ShowContent } from "./showContent.entity.js";
 import { Review } from "./review.entity.js";
-import { addOneContent, findOneContent } from "./showContent.controler.js";
+import { addOneContent, findOneContent } from "./showContent.controller.js";
 
 const em = orm.em;
 

@@ -1,5 +1,15 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, updateOne, searchUsers,followUser, unfollowUser, isFollowing, userLists } from "./user.controler.js";
+import {
+  findAll,
+  findOne,
+  deleteOne,
+  updateOne,
+  searchUsers,
+  followUser,
+  unfollowUser,
+  isFollowing,
+  userLists,
+} from "./user.controller.js";
 import { verifyToken } from "../shared/session/verifyToken.js";
 export const userRouter = Router();
 
@@ -21,6 +31,6 @@ userRouter.post("/unfollow/:userId/:idF", verifyToken, unfollowUser);
 
 //creo que para este ni haria falta el verify token, se podria llegar a reutilizar para que un usuario X
 //pueda ver si por ejemplo el usuario Y esta sigueiendo al usuario Z
-userRouter.get('/isFollowing/:userId/:idF',isFollowing);
+userRouter.get("/isFollowing/:userId/:idF", isFollowing);
 
-userRouter.get('/:id/lists',verifyToken,userLists);
+userRouter.get("/:id/lists", verifyToken, userLists);

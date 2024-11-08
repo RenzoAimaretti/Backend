@@ -31,17 +31,18 @@ async function findOneAdminDashboard(req: Request, res: Response) {
     return error;
   }
 }
-async function addOne(req: Request, res: Response) {
-  try {
-    const admin = em.create(Admin, req.body);
-    admin.adminStatus = true;
-    // sanitización pendiente
-    await em.flush();
-    res.status(201).json({ message: "admin created", data: admin });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
-}
+// se hace desde register el addOne
+// async function addOne(req: Request, res: Response) {
+//   try {
+//     const admin = em.create(Admin, req.body);
+//     admin.adminStatus = true;
+//     // sanitización pendiente
+//     await em.flush();
+//     res.status(201).json({ message: "admin created", data: admin });
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message });
+//   }
+// }
 
 async function updateOne(req: Request, res: Response) {
   try {
@@ -67,11 +68,4 @@ async function deleteOne(req: Request, res: Response) {
   }
 }
 
-export {
-  findAll,
-  findOne,
-  addOne,
-  updateOne,
-  deleteOne,
-  findOneAdminDashboard,
-};
+export { findAll, findOne, updateOne, deleteOne, findOneAdminDashboard };

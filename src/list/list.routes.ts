@@ -1,20 +1,27 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, addOne, updateOne,searchLists, addContent } from "./list.controler.js";
+import {
+  findAll,
+  findOne,
+  deleteOne,
+  addOne,
+  updateOne,
+  searchLists,
+  addContent,
+} from "./list.controller.js";
 
-export const listRouter=Router();
-listRouter.get('/search', searchLists);
+export const listRouter = Router();
+listRouter.get("/search", searchLists);
 
-listRouter.get('/',findAll);
+listRouter.get("/", findAll);
 
-listRouter.get('/:id',findOne);
+listRouter.get("/:id", findOne);
 
-listRouter.post('/',addOne);
+listRouter.post("/", addOne);
 
-listRouter.put('/:idList',updateOne);
+listRouter.put("/:idList", updateOne);
 
-listRouter.put('/:idContent/:idList/addContent',addContent);
+listRouter.put("/:idContent/:idList/addContent", addContent);
 
-listRouter.patch('/:userId/:nameList',updateOne);
+listRouter.patch("/:userId/:nameList", updateOne);
 
-listRouter.delete('/:id',deleteOne);
-
+listRouter.delete("/:id", deleteOne);

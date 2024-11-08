@@ -1,16 +1,23 @@
 import { Router } from "express";
-import { findAll, findOne, deleteOne, addOne, updateOne, searchSubscription } from "./subscription.controler.js";//sanitizeUserInput
+import {
+  findAll,
+  findOne,
+  deleteOne,
+  addOne,
+  updateOne,
+  searchSubscription,
+} from "./subscription.controller.js"; //sanitizeUserInput
 
-export const subscriptionRouter=Router();
+export const subscriptionRouter = Router();
 
-subscriptionRouter.get('/search', searchSubscription);
+subscriptionRouter.get("/search", searchSubscription);
 
-subscriptionRouter.get('/',findAll);
+subscriptionRouter.get("/", findAll);
 
-subscriptionRouter.get('/:id',findOne);
+subscriptionRouter.get("/:id", findOne);
 
-subscriptionRouter.post('/',addOne);
+subscriptionRouter.post("/", addOne);
 
-subscriptionRouter.put('/:id',updateOne);
+subscriptionRouter.put("/:id", updateOne);
 
-subscriptionRouter.delete('/:id',deleteOne);
+subscriptionRouter.delete("/:id", deleteOne);

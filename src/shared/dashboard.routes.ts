@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "./session/verifyToken.js";
-import { findOneDashboard } from "../user/user.controler.js";
+import { findOneDashboard } from "../user/user.controller.js";
 import { findOneAdminDashboard } from "../admin/admin.controller.js";
 
 export const dashboardRouter = Router();
