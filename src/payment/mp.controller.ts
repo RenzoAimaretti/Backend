@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { orm } from "../shared/db/orm";
 import { MercadoPagoConfig, Preference } from "mercadopago";
+import { ngrokHost, ngrokHostBackend, vendToken } from "../../config";
 
 const client = new MercadoPagoConfig({
-  accessToken:
-    "APP_USR-4816688256672306-110910-4fe7871da528646dcbe47b7f51eb5cfd-2088245358",
+  accessToken: vendToken,
 });
 
 export async function createPreference(req: Request, res: Response) {
@@ -21,22 +21,30 @@ export async function createPreference(req: Request, res: Response) {
         },
       ],
       back_urls: {
-        success:
-          "https://40ba-2803-9800-98c0-83a3-95ae-b4d9-30a-80e6.ngrok-free.app",
-        failure:
-          "https://40ba-2803-9800-98c0-83a3-95ae-b4d9-30a-80e6.ngrok-free.app",
-        pending:
-          "https://40ba-2803-9800-98c0-83a3-95ae-b4d9-30a-80e6.ngrok-free.app",
+        //hay que levantar estas urls con nrock por que mercado pago no acepta conexiones que no sean https!!!
+        success: `${ngrokHost}/success`,
+        failure: `${ngrokHost}/failure`,
+        pending: `${ngrokHost}/pending`,
       },
+      notify_url: `${ngrokHostBackend}/api/mp/webhook`,
       auto_return: "approved",
     };
     const preference = new Preference(client);
     const result = await preference.create({ body });
-    res.json({
-      id: result.id,
-    });
+    //devolvemos la url de mercado pago
+    res.json({ url: result.init_point });
   } catch (e) {
     console.log(e);
     res.status(500).json({ message: "Error al crear la preferencia de MP" });
+  }
+}
+
+export async function webhook(req: Request, res: Response) {
+  try {
+    console.log(req.body);
+    res.json({ message: "ok" });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "Error al procesar el webhook" });
   }
 }
