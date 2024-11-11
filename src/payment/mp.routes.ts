@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { createPreference, webhook } from "./mp.controller.js";
 
 export const mpRouter = Router();
