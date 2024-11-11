@@ -28,12 +28,6 @@ export async function createPreference(req: Request, res: Response) {
           currency: "ARS",
         },
       ],
-      payer: {
-        // lo tengo que sacar, no persiste en lo que manda MP dps
-        name: "Lalo",
-        surname: "Landa",
-        userId: 543,
-      },
       back_urls: {
         //hay que levantar estas urls con nrock por que mercado pago no acepta conexiones que no sean https!!!
         success: `${ngrokHost}`,

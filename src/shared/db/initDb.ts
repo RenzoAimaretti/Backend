@@ -30,11 +30,16 @@ export async function initDb() {
 
   if (subscriptions.length === 0) {
     console.log("Subscripciones no encontradas, creando Subscripciones");
-    const basic = em.create(Subscription, { name: "Basica", cantidadSem: 2 });
+    const basic = em.create(Subscription, {
+      name: "Basica",
+      cantidadSem: 2,
+      precio: 0,
+    });
     await em.persistAndFlush(basic);
     const premium = em.create(Subscription, {
       name: "Premium",
       cantidadSem: 7,
+      precio: 1000,
     });
     await em.persistAndFlush(premium);
   }
