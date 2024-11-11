@@ -15,6 +15,7 @@ import { contentRouter } from "./showContent/content.routes.js";
 import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
 import { initDb } from "./shared/db/initDb.js";
+import { mpRouter } from "./payment/mp.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -61,6 +62,7 @@ app.use("/api/dashboard", dashboardRouter);
 app.use("/api/review", contentRouter);
 app.use("/api/suggestions", suggestionRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/mp/", mpRouter);
 
 await syncSchema(); // solo en dev, NO SE DEBE USAR EN PRODUCCION
 //inicializado de la bd

@@ -30,11 +30,16 @@ export async function initDb() {
 
   if (subscriptions.length === 0) {
     console.log("Subscripciones no encontradas, creando Subscripciones");
-    const basic = em.create(Subscription, { name: "Basica", cantidadSem: 2 });
+    const basic = em.create(Subscription, {
+      name: "Basica",
+      cantidadSem: 2,
+      precio: 0,
+    });
     await em.persistAndFlush(basic);
     const premium = em.create(Subscription, {
       name: "Premium",
       cantidadSem: 7,
+      precio: 1000,
     });
     await em.persistAndFlush(premium);
   }
@@ -44,7 +49,8 @@ export async function initDb() {
     const user1Password = await bcrypt.hash("12341234", 10);
     const user1 = em.create(User, {
       name: "cineFan123",
-      email: "cinefan@gmail.com",
+      //este mail corresponde a la cuenta 2 de mercadopago
+      email: "test_user_1902302378@testuser.com",
       password: user1Password,
       rangoCinefilo: 1,
       subscription: 1,
