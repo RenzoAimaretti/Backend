@@ -8,9 +8,12 @@ import {
   vendToken,
 } from "../../config.js";
 import crypto from "crypto";
+import { User } from "../user/user.entity.js";
+import { Subscription } from "../subscription/subscription.entity.js";
 const client = new MercadoPagoConfig({
   accessToken: vendToken,
 });
+const em = orm.em;
 
 export async function createPreference(req: Request, res: Response) {
   try {
@@ -56,12 +59,10 @@ export async function createPreference(req: Request, res: Response) {
 
 export async function webhook(req: Request, res: Response) {
   try {
-    // const xSignature = req.headers["x-signature"] as string;
-    // const xRequestId = req.headers["x-request-id"] as string;
     const urlParams = new URLSearchParams(req.url.split("?")[1]);
     //id de la compra
     const dataID = urlParams.get("data.id");
-
+    //obtenemos la info de la compra con el id a la api de MP
     const payment = await fetch(
       `https://api.mercadopago.com/v1/payments/${dataID}`,
       {
@@ -74,47 +75,29 @@ export async function webhook(req: Request, res: Response) {
     //console.log(payment);
     if (payment.ok) {
       const paymentData = await payment.json();
-      console.log(paymentData);
-      //AHORA CON ESTO RECIBIMOS EL ID DE LA COMPRA Y EL DNI
-      // HAY QUE MODIFICAR USERS PARA HACER LA CORRESPONDENCIA
-      // ME GUSTARIA PODER GUARDAR EL ID IGUAL.
+      const payerData = paymentData.payer;
+      const status = paymentData.status;
+      const product = paymentData.description;
+      const paymentId = paymentData.id;
+      //podria usar la paymenId para guardar los cobros en la bd quizas
+      const payerUser = await em.findOneOrFail(User, {
+        email: payerData.email,
+      });
+
+      if (payerUser.email === payerData.email && status === "approved") {
+        //si esta aprobado y esta registrado en la db busco su subscripcion nueva y la actualizo
+        console.log(payerUser);
+        console.log("Usuario encontrado");
+        const newSubscription = await em.findOneOrFail(Subscription, {
+          name: product,
+        });
+        console.log(newSubscription);
+        //actualizo la subscripcion del usuario
+        payerUser.subscription = newSubscription;
+        console.log(payerUser);
+        await em.persistAndFlush(payerUser);
+      }
     }
-
-    // // Extrae los valores `ts` y `hash` de `xSignature`
-    // const parts = xSignature?.split(",") || [];
-    // let ts: string | undefined;
-    // let hash: string | undefined;
-
-    // parts.forEach((part) => {
-    //   const [key, value] = part.split("=");
-    //   if (key && value) {
-    //     const trimmedKey = key.trim();
-    //     const trimmedValue = value.trim();
-    //     if (trimmedKey === "ts") {
-    //       ts = trimmedValue;
-    //     } else if (trimmedKey === "v1") {
-    //       hash = trimmedValue;
-    //     }
-    //   }
-    // });
-
-    // // Construye la cadena para firmar
-    // const stringToSign = `id:${dataID};request-id:${xRequestId};ts:${ts}`;
-    // const sha = crypto
-    //   .createHmac("sha256", clientSecretVend)
-    //   .update(stringToSign)
-    //   .digest("hex");
-
-    //por alguna razon no va
-    // Verifica la firma
-    // if (hash === sha) {
-    //   console.log("La firma es correcta");
-    //   res.status(201).json({ message: "Webhook validado y recibido" });
-    // } else {
-    //   console.log("Firma incorrecta");
-    //   res.status(401).json({ message: "Firma no válida" });
-    // }
-
     res.status(201).json({ message: "Webhook validado y recibido" });
   } catch (e) {
     console.error("Error al procesar el webhook:", e);

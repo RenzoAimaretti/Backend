@@ -44,7 +44,8 @@ export async function initDb() {
     const user1Password = await bcrypt.hash("12341234", 10);
     const user1 = em.create(User, {
       name: "cineFan123",
-      email: "cinefan@gmail.com",
+      //este mail corresponde a la cuenta 2 de mercadopago
+      email: "test_user_1902302378@testuser.com",
       password: user1Password,
       rangoCinefilo: 1,
       subscription: 1,
