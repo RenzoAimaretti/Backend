@@ -33,7 +33,7 @@ export async function initDb() {
     const basic = em.create(Subscription, {
       name: "Basica",
       cantidadSem: 2,
-      precio: 0,
+      precio: 110,
     });
     await em.persistAndFlush(basic);
     const premium = em.create(Subscription, {
