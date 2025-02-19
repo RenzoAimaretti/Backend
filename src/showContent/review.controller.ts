@@ -24,29 +24,29 @@ async function addOneReview(req: Request, res: Response) {
       return res.status(200).json({ message: "Toxicity detected" });
     }
 
-    let newReview: Review;
-    if (content) {
-      newReview = em.create(Review, {
-        rating: req.body.rating,
-        description: req.body.description,
-        reviewOwner: user.id,
-        showReviewd: content,
-        comments: [],
-      });
-    } else {
-      await addOneContent(req, res);
-      const newContent = (await findOneContent(req, res)) as ShowContent;
-      newReview = em.create(Review, {
-        rating: req.body.rating,
-        description: req.body.description,
-        reviewOwner: user.id,
-        showReviewd: newContent,
-        comments: [],
-      });
+    else {
+      if (content != null) {
+        const newReview = em.create(Review, {
+          rating: req.body.rating,
+          description: req.body.description,
+          reviewOwner: user.id,
+          showReviewd: content,
+          comments: [],
+        });
+        await em.persistAndFlush(newReview);
+      } else {
+        addOneContent(req, res);
+        const content = (await findOneContent(req, res)) as ShowContent;
+        const newReview = em.create(Review, {
+          rating: req.body.rating,
+          description: req.body.description,
+          reviewOwner: user.id,
+          showReviewd: content,
+          comments: [],
+        });
+        await em.persistAndFlush(newReview);
+      }
     }
-
-    await em.persistAndFlush(newReview);
-
     const reviewsCount = await em.count(Review, { reviewOwner: user.id });
     const newRangoCinefilo = await em.findOne(RangoCinefilo, {
       minReviews: { $lte: reviewsCount },
@@ -128,4 +128,3 @@ async function editReview(req: Request, res: Response) {
   }
 }
 export { addOneReview, deleteOneReview, getContentReviews, editReview };
-
