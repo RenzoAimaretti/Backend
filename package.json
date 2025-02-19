@@ -14,6 +14,7 @@
     "@mikro-orm/core": "5.8.10",
     "@mikro-orm/mysql": "5.8.10",
     "@mikro-orm/sql-highlighter": "1.0.1",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "2.8.5",
@@ -24,6 +25,7 @@
     "reflect-metadata": "0.2.2"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.4",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
