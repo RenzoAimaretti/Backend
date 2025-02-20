@@ -107,20 +107,38 @@ async function updateOne(req: Request,res: Response){
 async function deleteOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id);
+       
         const rangoAEliminar = await em.findOneOrFail(RangoCinefilo, { id });
-        const rangoPredeterminado = await em.findOneOrFail(RangoCinefilo, { id: 1 });
+
+       
+        const rangosOrdenados = await em.find(RangoCinefilo, {}, { orderBy: { minReviews: 'ASC' } });
+
+       
+        const indexRangoAEliminar = rangosOrdenados.findIndex(rango => rango.id === rangoAEliminar.id);
+
+        
+        const rangoAnterior = rangosOrdenados[indexRangoAEliminar - 1];
+
+        
         const usuariosConRango = await em.find(User, { rangoCinefilo: rangoAEliminar });
         let movedUsers = false;
+
         if (usuariosConRango.length > 0) {
             movedUsers = true;
+            
             usuariosConRango.forEach(usuario => {
-                usuario.rangoCinefilo = rangoPredeterminado;
+              
+                usuario.rangoCinefilo = rangoAnterior;
             });
             await em.flush(); 
         }
+
+        
         await em.removeAndFlush(rangoAEliminar);
-        const message = movedUsers 
-            ? 'Rango eliminado con éxito y los usuarios que lo tenían fueron reasignados al rango predeterminado.'
+
+        
+        const message = movedUsers
+            ? 'Rango eliminado con éxito y los usuarios que lo tenían fueron reasignados a un rango correspondiente.'
             : 'Rango eliminado con éxito.';
         res.status(200).json({ message, data: rangoAEliminar });
     } catch (error: any) {
