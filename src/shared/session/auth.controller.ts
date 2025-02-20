@@ -4,6 +4,7 @@ import { User } from "../../user/user.entity.js";
 import { orm } from "../db/orm.js";
 import jwt from "jsonwebtoken";
 import { Admin } from "../../admin/admin.entity.js";
+import { claveSecretaJwt } from "../../../config.js";
 const em = orm.em;
 
 async function register(req: Request, res: Response) {
@@ -68,7 +69,7 @@ async function login(req: Request, res: Response) {
         subscription: user.subscription,
       },
 
-      "clavesecreta-de-prueba-provisional-n$@#131238s91",
+      claveSecretaJwt,
 
       { expiresIn: "1h" }
     );
@@ -108,7 +109,7 @@ async function loginAdmin(req: Request, res: Response) {
         adminStatus: admin.adminStatus,
       },
 
-      "clavesecreta-de-prueba-provisional-n$@#131238s91",
+      claveSecretaJwt,
 
       { expiresIn: "1h" }
     );
