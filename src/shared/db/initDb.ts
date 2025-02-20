@@ -19,11 +19,13 @@ export async function initDb() {
     const aficionado = em.create(RangoCinefilo, {
       nameRango: "Aficionado",
       descriptionRango: "Aficionado al cine",
+      minReviews: 0,
     });
     await em.persistAndFlush(aficionado);
     const cineasta = em.create(RangoCinefilo, {
       nameRango: "Cineasta",
       descriptionRango: "Cineasta de culto",
+      minReviews: 1,
     });
     em.persistAndFlush(cineasta);
   }

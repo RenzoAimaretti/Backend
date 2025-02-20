@@ -47,15 +47,27 @@ async function findOne(req: Request,res: Response){
     }
 };
 
-//añadir uno nuevo
-async function addOne(req: Request,res: Response){
+async function addOne(req: Request, res: Response) {
     try {
-        const range = em.create(RangoCinefilo, req.body)
-        await em.flush()
-        res.status(201).json({message:'range created',data:range})
-    } catch (error:any) {
-        res.status(500).json({message:error.message})
         
+        const { nameRango, descriptionRango, minReviews } = req.body;
+
+        
+        if (!nameRango || !descriptionRango || minReviews === undefined) {
+            return res.status(400).json({ message: 'Faltan campos obligatorios' });
+        }
+
+       
+        const rango = em.create(RangoCinefilo, {
+            nameRango,
+            descriptionRango,
+            minReviews, 
+        });
+
+        await em.flush();
+        res.status(201).json({ message: 'Rango creado con éxito', data: rango });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
     }
 };
 
