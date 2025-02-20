@@ -12,19 +12,30 @@ async function addOneReview(req: Request, res: Response) {
   try {
     const content = await findOneContent(req, res);
     const id = Number.parseInt(req.params.id);
-    const user = await em.findOneOrFail(User, { id }, {
-      populate: ["rangoCinefilo", "friends", "friendsFrom", "lists", "followingLists", "subscription"],
-    });
+    const user = await em.findOneOrFail(
+      User,
+      { id },
+      {
+        populate: [
+          "rangoCinefilo",
+          "friends",
+          "friendsFrom",
+          "lists",
+          "followingLists",
+          "subscription",
+        ],
+      }
+    );
 
-    const toxicityScore = await perspectiveAnalisys.analyzeText(req.body.description);
+    const toxicityScore = await perspectiveAnalisys.analyzeText(
+      req.body.description
+    );
     if (toxicityScore == null) {
       return res.status(500).json({ message: "Error with Perspective API" });
     }
     if (toxicityScore > 0.7) {
       return res.status(200).json({ message: "Toxicity detected" });
-    }
-
-    else {
+    } else {
       if (content != null) {
         const newReview = em.create(Review, {
           rating: req.body.rating,
@@ -48,9 +59,13 @@ async function addOneReview(req: Request, res: Response) {
       }
     }
     const reviewsCount = await em.count(Review, { reviewOwner: user.id });
-    const newRangoCinefilo = await em.findOne(RangoCinefilo, {
-      minReviews: { $lte: reviewsCount },
-    }, { orderBy: { minReviews: 'DESC' } });
+    const newRangoCinefilo = await em.findOne(
+      RangoCinefilo,
+      {
+        minReviews: { $lte: reviewsCount },
+      },
+      { orderBy: { minReviews: "DESC" } }
+    );
 
     let rangoChanged = false;
     if (newRangoCinefilo && user.rangoCinefilo.id !== newRangoCinefilo.id) {
@@ -64,13 +79,10 @@ async function addOneReview(req: Request, res: Response) {
       rangoChanged,
       newRango: newRangoCinefilo ? newRangoCinefilo.nameRango : null,
     });
-
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
-
-      
 
 async function deleteOneReview(req: Request, res: Response) {
   try {
