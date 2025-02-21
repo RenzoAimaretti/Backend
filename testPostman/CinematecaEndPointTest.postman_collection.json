@@ -1,0 +1,1604 @@
+{
+	"info": {
+		"_postman_id": "1f244105-009a-433f-ae1e-212145443a95",
+		"name": "Cinemateca",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41532179"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "findAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\",function(){\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"User exists\", function(){\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const userData = jsonData.data;\r",
+									"\r",
+									"    // Validar que el ID del usuario sea 1\r",
+									"    pm.expect(userData.id).to.eql(1);\r",
+									"\r",
+									"    // Validar que el nombre de usuario sea 'cineFan123'\r",
+									"    pm.expect(userData.name).to.eql(\"cineFan123\");\r",
+									"\r",
+									"    // Validar que el email sea el correcto\r",
+									"    pm.expect(userData.email).to.eql(\"test_user_1902302378@testuser.com\");\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOne",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"jwt_token\")) {\r",
+									"    pm.sendRequest({\r",
+									"        url: \"http://localhost:3000/api/auth/login\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\"\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify({\r",
+									"                email: \"test_user_1902302378@testuser.com\",\r",
+									"                password: \"12341234\"\r",
+									"            })\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(\"Error during login:\", err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            pm.environment.set(\"jwt_token\", jsonData.token); \r",
+									"        }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Eliminar el token del entorno después de la solicitud\r",
+									"pm.environment.unset(\"jwt_token\");\r",
+									"console.log(\"Token eliminado del entorno.\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"User Has been updated\", function () {\r",
+									"    // Si la actualizacion fue correcta, los datos del usuario son devueltos dentro de data y se recibe el message \"user updated\"\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql(\"user updated\");\r",
+									"\r",
+									"    // Validar campos individuales\r",
+									"    pm.expect(jsonData.data).to.have.property(\"id\", 1);\r",
+									"    pm.expect(jsonData.data).to.have.property(\"name\", \"Test Update User\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"email\", \"test_user_1902302378@testuser.com\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"password\").that.is.a(\"string\"); // Validar que la contraseña sea un hash\r",
+									"    // Los campos de rango y de subscripcion no se validan aca por que su actualizacion depende de otra solicitud\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Test Update User\",\r\n    \"password\":\"12341234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "id del usuario 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOne",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"jwt_token\")) {\r",
+									"    pm.sendRequest({\r",
+									"        url: \"http://localhost:3000/api/auth/login\", \r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\"\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify({\r",
+									"                email: \"test_user_1902302378@testuser.com\",\r",
+									"                password: \"12341234\"\r",
+									"            })\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(\"Error during login:\", err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            pm.environment.set(\"jwt_token\", jsonData.token);\r",
+									"            console.log(jsonData);\r",
+									"        }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Eliminar el token del entorno después de la solicitud\r",
+									"pm.environment.unset(\"jwt_token\");\r",
+									"console.log(\"Token eliminado del entorno.\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"User Has been updated\", function () {\r",
+									"    // Si la actualizacion fue correcta, los datos del usuario son devueltos dentro de data y se recibe el message \"user updated\"\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.eql(\"user updated\");\r",
+									"\r",
+									"    // Validar campos individuales\r",
+									"    pm.expect(jsonData.data).to.have.property(\"id\", 1);\r",
+									"    // Como la peticion put y patch tienen el mismo objetivo, aprovechamos esta para devolver los datos a su estado anterior\r",
+									"    pm.expect(jsonData.data).to.have.property(\"name\", \"cineFan123\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"email\", \"test_user_1902302378@testuser.com\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"password\").that.is.a(\"string\"); // Validar que la contraseña sea un hash\r",
+									"    // Los campos de rango y de subscripcion no se validan aca por que su actualizacion depende de otra solicitud\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"cineFan123\",\r\n    \"password\":\"12341234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOne",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// 1. Registrar un usuario\r",
+									"pm.sendRequest({\r",
+									"    url: \"http://localhost:3000/api/auth/register\",\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\"\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: \"raw\",\r",
+									"        raw: JSON.stringify({\r",
+									"            name: \"usuario para delete\",\r",
+									"            email: \"deleteUser@testuser.com\",\r",
+									"            password: \"12341234\"\r",
+									"        })\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.error(\"Error during registration:\", err);\r",
+									"    } else {\r",
+									"        console.log(\"User registered successfully.\");\r",
+									"        \r",
+									"        // 2. Obtener la lista de usuarios y guardar el ID del último usuario\r",
+									"        pm.sendRequest({\r",
+									"            url: \"http://localhost:3000/api/users/\",\r",
+									"            method: \"GET\"\r",
+									"        }, function (err, res) {\r",
+									"            if (err) {\r",
+									"                console.error(\"Error during user retrieval:\", err);\r",
+									"            } else {\r",
+									"                const jsonData = res.json();\r",
+									"                const lastUser = jsonData.data[jsonData.data.length - 1];\r",
+									"                const lastUserId = lastUser.id; \r",
+									"                pm.environment.set(\"lastUserId\", lastUserId);\r",
+									"                console.log(\"Último usuario ID:\", lastUserId);\r",
+									"                \r",
+									"                // 3. Loggear al usuario para obtener el token\r",
+									"                pm.sendRequest({\r",
+									"                    url: \"http://localhost:3000/api/auth/login\",\r",
+									"                    method: \"POST\",\r",
+									"                    header: {\r",
+									"                        \"Content-Type\": \"application/json\"\r",
+									"                    },\r",
+									"                    body: {\r",
+									"                        mode: \"raw\",\r",
+									"                        raw: JSON.stringify({\r",
+									"                            email: \"deleteUser@testuser.com\",\r",
+									"                            password: \"12341234\"\r",
+									"                        })\r",
+									"                    }\r",
+									"                }, function (err, res) {\r",
+									"                    if (err) {\r",
+									"                        console.error(\"Error during login:\", err);\r",
+									"                    } else {\r",
+									"                        const jsonData = res.json();\r",
+									"                        pm.environment.set(\"jwt_token\", jsonData.token);\r",
+									"                        console.log(\"Token JWT guardado:\", jsonData.token);\r",
+									"                    }\r",
+									"                });\r",
+									"            }\r",
+									"        });\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Eliminar el token del entorno después de la solicitud\r",
+									"pm.environment.unset(\"jwt_token\");\r",
+									"console.log(\"Token eliminado del entorno.\");\r",
+									"\r",
+									"pm.test(\"User deleted\",function(){\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"User does not exist in DB\", function () {\r",
+									"    pm.sendRequest({\r",
+									"        url: `http://localhost:3000/api/users/${pm.environment.get(\"lastUserId\")}`,\r",
+									"        method: \"GET\"\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error during the request:\", err);\r",
+									"        } else {\r",
+									"            // Verificar si la respuesta indica que el usuario no existe\r",
+									"            pm.expect(res.status).to.eql(500);  \r",
+									"            pm.expect(res.json().message).to.eql(\"User not found\");  \r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/users/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{lastUserId}}",
+									"description": "Este id corresponde al del ultimo usuario registrado, para asi no eliminar el 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "followUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"jwt_token\")) {\r",
+									"    pm.sendRequest({\r",
+									"        url: \"http://localhost:3000/api/auth/login\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\"\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify({\r",
+									"                email: \"test_user_1902302378@testuser.com\",\r",
+									"                password: \"12341234\"\r",
+									"            })\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(\"Error during login:\", err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            pm.environment.set(\"jwt_token\", jsonData.token); // Ajusta 'token' según la respuesta de tu API.\r",
+									"        }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Eliminar el token del entorno después de la solicitud\r",
+									"pm.environment.unset(\"jwt_token\");\r",
+									"console.log(\"Token eliminado del entorno.\");\r",
+									"\r",
+									"pm.test(\"User followed\",function(){\r",
+									"    pm.response.to.have.status(201)\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/users/follow/:userId/:idF",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"follow",
+								":userId",
+								":idF"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "id del usuario que desea seguir a alguien"
+								},
+								{
+									"key": "idF",
+									"value": "2",
+									"description": "id del usuario al que se va a seguir"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unFollowUser",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"jwt_token\")) {\r",
+									"    pm.sendRequest({\r",
+									"        url: \"http://localhost:3000/api/auth/login\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\"\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify({\r",
+									"                email: \"test_user_1902302378@testuser.com\",\r",
+									"                password: \"12341234\"\r",
+									"            })\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(\"Error during login:\", err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            pm.environment.set(\"jwt_token\", jsonData.token); // Ajusta 'token' según la respuesta de tu API.\r",
+									"        }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Eliminar el token del entorno después de la solicitud\r",
+									"pm.environment.unset(\"jwt_token\");\r",
+									"console.log(\"Token eliminado del entorno.\");\r",
+									"\r",
+									"pm.test(\"User followed\",function(){\r",
+									"    pm.response.to.have.status(201)\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/users/unfollow/:userId/:idF",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"unfollow",
+								":userId",
+								":idF"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "Id del usuario que desea dejar de seguir a alguien"
+								},
+								{
+									"key": "idF",
+									"value": "2",
+									"description": "id del usuario que dejara de ser seguido"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "isFollowing",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/users/isfollowing/:userId/:idF",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"isfollowing",
+								":userId",
+								":idF"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "id del usuario logueado"
+								},
+								{
+									"key": "idF",
+									"value": "2",
+									"description": "id del usuario que se desea validar si es seguido"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "userLists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"jwt_token\")) {\r",
+									"    pm.sendRequest({\r",
+									"        url: \"http://localhost:3000/api/auth/login\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\"\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify({\r",
+									"                email: \"test_user_1902302378@testuser.com\",\r",
+									"                password: \"12341234\"\r",
+									"            })\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(\"Error during login:\", err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            pm.environment.set(\"jwt_token\", jsonData.token); // Ajusta 'token' según la respuesta de tu API.\r",
+									"        }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/api/users/:id/lists",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								":id",
+								"lists"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "id del usuario logueado que quiere ver sus listas"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rangocinefilo",
+			"item": [
+				{
+					"name": "findOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Rango exists\", function() {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const rangeData = jsonData.data;\r",
+									"\r",
+									"    // Validar que el ID del rango sea 1\r",
+									"    pm.expect(rangeData.id).to.eql(1);\r",
+									"\r",
+									"\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/rangos/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Respuesta exitosa con código 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"La respuesta es un array\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.data).to.be.an(\"array\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/rangos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Rango created\", function() {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const rangeData = jsonData.data;\r",
+									"\r",
+									"    pm.expect(rangeData.nameRango).to.eql(\"experto\");\r",
+									"    pm.expect(rangeData.descriptionRango).to.eql(\"Para usuarios expertos\");\r",
+									"    pm.expect(rangeData.minReviews).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nameRango\": \"experto\",\r\n    \"descriptionRango\": \"Para usuarios expertos\",\r\n    \"minReviews\": 200\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/rangos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addOneDuplicateminReview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Rango con minReviews duplicado no debe crearse\", function () {\r",
+									"    pm.response.to.have.status(400);  // Debe devolver un error 400\r",
+									"    pm.expect(pm.response.json().message).to.eql(\"Ya existe un rango con esta cantidad de reseñas mínimas\"); // Verifica el mensaje de error\r",
+									"});\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nameRango\": \"amateur\",\r\n    \"descriptionRango\": \"Para usuarios amateurs\",\r\n    \"minReviews\": 200\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/rangos",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Rango updated\", function() {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const rangeData = jsonData.data;\r",
+									"\r",
+									"    // Validar que el nombre del rango sea 'Premium'\r",
+									"    pm.expect(rangeData.nameRango).to.eql(\"Premium\");\r",
+									"\r",
+									"    // Validar que la descripción del rango sea correcta\r",
+									"    pm.expect(rangeData.descriptionRango).to.eql(\"Para usuarios top-tier\");\r",
+									"\r",
+									"    // Validar que el valor de minReviews sea 100\r",
+									"    pm.expect(rangeData.minReviews).to.eql(100);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nameRango\": \"Premium\",\r\n    \"descriptionRango\": \"Para usuarios top-tier\",\r\n    \"minReviews\": 100\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/rangos/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOne",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"            url: 'http://localhost:3000/api/rangos',  // Asegúrate de que esta URL sea la correcta\r",
+									"            method: 'GET'\r",
+									"        }, function (err, res) {\r",
+									"            if (err) {\r",
+									"                console.log(\"Error al obtener los rangos:\", err);\r",
+									"            } else {\r",
+									"                const rangos = res.json().data;\r",
+									"\r",
+									"                if (rangos && rangos.length > 0) {\r",
+									"                    // Ordenar los rangos por ID para obtener el último\r",
+									"                    const lastRango = rangos.sort((a, b) => b.id - a.id)[0];\r",
+									"                    const lastRangoId = lastRango.id;\r",
+									"\r",
+									"                    // Almacenar el ID del rango con el mayor ID en el entorno\r",
+									"                    pm.environment.set(\"lastRangoId\", lastRangoId);\r",
+									"                    console.log(\"Último Rango ID almacenado:\", lastRangoId);\r",
+									"                } else {\r",
+									"                    console.log(\"No se encontraron rangos.\");\r",
+									"                }\r",
+									"            }\r",
+									"        });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Rango eliminado\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Rango no existe en la base de datos\", function () {\r",
+									"    pm.sendRequest({\r",
+									"        url: `http://localhost:3000/api/rangos/${pm.environment.get(\"lastRangoId\")}`,\r",
+									"        method: \"GET\"\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error durante la solicitud:\", err);\r",
+									"        } else {\r",
+									"            // Esperar un código de estado 404, ya que el rango fue eliminado\r",
+									"            pm.expect(res.status).to.eql(404);  \r",
+									"            // Verificar el mensaje que la API debería devolver\r",
+									"            pm.expect(res.json().message).to.eql(\"Rango no encontrado\");  \r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/rangos/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{lastRangoId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findOneByName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Rango encontrado o vacío\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData.data).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Tiempo de respuesta menor a 300ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/rangos/search?nameRango=experimentado",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"rangos",
+								"search"
+							],
+							"query": [
+								{
+									"key": "nameRango",
+									"value": "experimentado"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscription",
+			"item": [
+				{
+					"name": "findAll",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\",function(){\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "findOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"subscription exists\", function(){\r",
+									"    const jsonData = pm.response.json();\r",
+									"    const subscriptionData = jsonData.data;\r",
+									"\r",
+									"    pm.expect(subscriptionData.id).to.eql(1);\r",
+									"\r",
+									"    pm.expect(subscriptionData.name).to.eql(\"Basica\");\r",
+									"\r",
+									"    pm.expect(subscriptionData.cantidadSem).to.eql(2);\r",
+									"\r",
+									"    pm.expect(subscriptionData.precio).to.eql(110);\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function(){\r",
+									"    pm.response.to.have.status(201);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Subscription has been created\", function(){\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData.message).to.eql(\"subscription created\");\r",
+									"\r",
+									"    pm.expect(jsonData.data).to.have.property(\"name\", \"diamante\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"cantidadSem\", 14);\r",
+									"    pm.expect(jsonData.data).to.have.property(\"precio\", 3000);\r",
+									"\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"diamante\",\r\n    \"cantidadSem\": 14,\r\n    \"precio\": 3000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function(){\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Subscription has been created\", function(){\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData.message).to.eql(\"subscription updated\");\r",
+									"\r",
+									"    pm.expect(jsonData.data).to.have.property(\"name\", \"estandar\");\r",
+									"    pm.expect(jsonData.data).to.have.property(\"cantidadSem\", 2);\r",
+									"    pm.expect(jsonData.data).to.have.property(\"precio\", 100);\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"            url: 'http://localhost:3000/api/subscription',  // Asegúrate de que esta URL sea la correcta\r",
+									"            method: 'GET'\r",
+									"        }, function (err, res) {\r",
+									"            if (err) {\r",
+									"                console.log(\"Error al obtener las subscripciones:\", err);\r",
+									"            } else {\r",
+									"                const subscripciones = res.json().data;\r",
+									"\r",
+									"                if (subscripciones && subscripciones.length > 0) {\r",
+									"                    // Ordenar los rangos por ID para obtener el último\r",
+									"                    const lastSub = subscripciones.sort((a, b) => b.id - a.id)[0];\r",
+									"                    const lastSubId = lastSub.id;\r",
+									"\r",
+									"                    // Almacenar el ID del rango con el mayor ID en el entorno\r",
+									"                    pm.environment.set(\"lastSubId\", lastSubId);\r",
+									"                    console.log(\"Último Sub ID almacenado:\", lastSubId);\r",
+									"                } else {\r",
+									"                    console.log(\"No se encontraron Subs.\");\r",
+									"                }\r",
+									"            }\r",
+									"        });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"estandar\",\r\n    \"cantidadSem\": 2,\r\n    \"precio\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{lastSubId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteOne",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Subscription deleted\",function(){\r",
+									"    pm.response.to.have.status(200)\r",
+									"})\r",
+									"\r",
+									"pm.test(\"subscription does not exist in DB\", function () {\r",
+									"    pm.sendRequest({\r",
+									"        url: `http://localhost:3000/api/subscription/${pm.environment.get(\"lastSubscriptionId\")}`,\r",
+									"        method: \"GET\"\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(\"Error during the request:\", err);\r",
+									"        } else {\r",
+									"            pm.expect(res.status).to.eql(500);  \r",
+									"            pm.expect(res.json().message).to.eql(\"Subscription not found\");  \r",
+									"        }\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest({\r",
+									"            url: 'http://localhost:3000/api/subscription',  // Asegúrate de que esta URL sea la correcta\r",
+									"            method: 'GET'\r",
+									"        }, function (err, res) {\r",
+									"            if (err) {\r",
+									"                console.log(\"Error al obtener las subscripciones:\", err);\r",
+									"            } else {\r",
+									"                const subscripciones = res.json().data;\r",
+									"\r",
+									"                if (subscripciones && subscripciones.length > 0) {\r",
+									"                    // Ordenar los rangos por ID para obtener el último\r",
+									"                    const lastSub = subscripciones.sort((a, b) => b.id - a.id)[0];\r",
+									"                    const lastSubId = lastSub.id;\r",
+									"\r",
+									"                    // Almacenar el ID del rango con el mayor ID en el entorno\r",
+									"                    pm.environment.set(\"lastSubId\", lastSubId);\r",
+									"                    console.log(\"Último Sub ID almacenado:\", lastSubId);\r",
+									"                } else {\r",
+									"                    console.log(\"No se encontraron Subs.\");\r",
+									"                }\r",
+									"            }\r",
+									"        });"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{lastSubId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "searchSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\",function(){\r",
+									"    pm.response.to.have.status(200)\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/subscription/search?name=p",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"subscription",
+								"search"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "p"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "{{jwt_token}}",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
