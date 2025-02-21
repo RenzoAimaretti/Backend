@@ -7,7 +7,7 @@ Este es un proyecto desarrollado con Express.js.
 Para inicializar el proyecto, ejecuta el siguiente comando:
 
 ```sh
-pnpm init
+pnpm install
 ```
 
 ## Ejecución del proyecto
@@ -21,6 +21,7 @@ pnpm start:dev
 ## Pruebas de Endpoints
 
 Para probar los endpoints del proyecto:
+
 1. Importa la colección de Postman en el cliente de Postman.
 2. Ejecuta las solicitudes según la configuración de la colección.
 
@@ -28,5 +29,3 @@ Para probar los endpoints del proyecto:
 
 - Tener instalado [pnpm](https://pnpm.io/)
 - Tener instalado Node.js y Postman
-
-
