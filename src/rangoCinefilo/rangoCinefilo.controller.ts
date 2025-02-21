@@ -27,8 +27,8 @@ async function searchRangoCinefilo(req: Request, res: Response) {
 
 async function findAll(req: Request,res: Response){
     try {
-        const range= await em.find(RangoCinefilo,{})
-        res.status(200).json({message:'all range found',data:range})
+        const rango= await em.find(RangoCinefilo,{})
+        res.status(200).json({message:'todos los rangos encontrados',data:rango})
     } catch (error:any) {
         res.status(500).json({message:error.message})
         
@@ -48,8 +48,9 @@ async function findOne(req: Request,res: Response){
 };
 
 async function addOne(req: Request, res: Response) {
+   
+
     try {
-        
         const { nameRango, descriptionRango, minReviews } = req.body;
 
         
@@ -57,19 +58,37 @@ async function addOne(req: Request, res: Response) {
             return res.status(400).json({ message: 'Faltan campos obligatorios' });
         }
 
-       
+        
+        const existingRango = await em.findOne(RangoCinefilo, { minReviews });
+        if (existingRango) {
+            return res.status(400).json({ message: 'Ya existe un rango con esta cantidad de reseñas mínimas' });
+        }
+
+        
         const rango = em.create(RangoCinefilo, {
             nameRango,
             descriptionRango,
-            minReviews, 
+            minReviews,
         });
 
-        await em.flush();
-        res.status(201).json({ message: 'Rango creado con éxito', data: rango });
+        
+        await em.begin(); 
+        await em.persistAndFlush(rango);
+        await em.commit(); 
+
+        
+        return res.status(201).json({
+            message: 'Rango creado con éxito',
+            data: rango
+        });
     } catch (error: any) {
-        res.status(500).json({ message: error.message });
+        await em.rollback(); 
+        console.error('Error al crear el rango:', error);
+        return res.status(500).json({
+            message: 'Error al crear el rango. ' + error.message
+        });
     }
-};
+}
 
 
 async function updateOne(req: Request,res: Response){
@@ -88,20 +107,38 @@ async function updateOne(req: Request,res: Response){
 async function deleteOne(req: Request, res: Response) {
     try {
         const id = Number.parseInt(req.params.id);
+       
         const rangoAEliminar = await em.findOneOrFail(RangoCinefilo, { id });
-        const rangoPredeterminado = await em.findOneOrFail(RangoCinefilo, { id: 1 });
+
+       
+        const rangosOrdenados = await em.find(RangoCinefilo, {}, { orderBy: { minReviews: 'ASC' } });
+
+       
+        const indexRangoAEliminar = rangosOrdenados.findIndex(rango => rango.id === rangoAEliminar.id);
+
+        
+        const rangoAnterior = rangosOrdenados[indexRangoAEliminar - 1];
+
+        
         const usuariosConRango = await em.find(User, { rangoCinefilo: rangoAEliminar });
         let movedUsers = false;
+
         if (usuariosConRango.length > 0) {
             movedUsers = true;
+            
             usuariosConRango.forEach(usuario => {
-                usuario.rangoCinefilo = rangoPredeterminado;
+              
+                usuario.rangoCinefilo = rangoAnterior;
             });
             await em.flush(); 
         }
+
+        
         await em.removeAndFlush(rangoAEliminar);
-        const message = movedUsers 
-            ? 'Rango eliminado con éxito y los usuarios que lo tenían fueron reasignados al rango predeterminado.'
+
+        
+        const message = movedUsers
+            ? 'Rango eliminado con éxito y los usuarios que lo tenían fueron reasignados a un rango correspondiente.'
             : 'Rango eliminado con éxito.';
         res.status(200).json({ message, data: rangoAEliminar });
     } catch (error: any) {
