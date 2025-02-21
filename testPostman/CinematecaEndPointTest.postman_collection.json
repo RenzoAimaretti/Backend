@@ -1006,18 +1006,25 @@
 									"    const rangeData = jsonData.data;\r",
 									"\r",
 									"    // Validar que el nombre del rango sea 'Premium'\r",
-									"    pm.expect(rangeData.nameRango).to.eql(\"Premium\");\r",
+									"    pm.expect(rangeData.nameRango).to.eql(\"Basico +\");\r",
 									"\r",
 									"    // Validar que la descripción del rango sea correcta\r",
-									"    pm.expect(rangeData.descriptionRango).to.eql(\"Para usuarios top-tier\");\r",
+									"    pm.expect(rangeData.descriptionRango).to.eql(\"Para usuarios sobre la media\");\r",
 									"\r",
 									"    // Validar que el valor de minReviews sea 100\r",
-									"    pm.expect(rangeData.minReviews).to.eql(100);\r",
+									"    pm.expect(rangeData.minReviews).to.eql(2);\r",
 									"});\r",
 									""
 								],
 								"type": "text/javascript",
 								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -1048,7 +1055,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
