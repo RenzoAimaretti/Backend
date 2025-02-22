@@ -16,7 +16,7 @@ import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
 import { initDb } from "./shared/db/initDb.js";
 import { mpRouter } from "./payment/mp.routes.js";
-import { claveSecretaJwt, ngrokHost, port } from "../config.js";
+import { claveSecretaJwt, port } from "../config.js";
 
 const app = express();
 app.use(express.json());
@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 const corsOptions = {
-  origin: ngrokHost || "http://localhost:4200",
+  origin: "*",
   optionsSuccessStatus: 200,
   credentials: true,
 };
