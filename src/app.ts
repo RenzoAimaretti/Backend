@@ -16,7 +16,7 @@ import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
 import { initDb } from "./shared/db/initDb.js";
 import { mpRouter } from "./payment/mp.routes.js";
-import { port } from "../config.js";
+import { claveSecretaJwt, ngrokHost, port } from "../config.js";
 
 const app = express();
 app.use(express.json());
@@ -29,10 +29,7 @@ app.use((req, res, next) => {
   req.session = { user: null } as any;
   try {
     //moverla a env
-    data = jwt.verify(
-      token,
-      "clavesecreta-de-prueba-provisional-n$@#131238s91"
-    );
+    data = jwt.verify(token, claveSecretaJwt);
   } catch (error) {
     req.session.user = null;
   }
@@ -41,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 const corsOptions = {
-  origin: "http://localhost:4200",
+  origin: ngrokHost || "http://localhost:4200",
   optionsSuccessStatus: 200,
   credentials: true,
 };
