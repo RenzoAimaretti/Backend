@@ -1,12 +1,18 @@
 import { MikroORM } from "@mikro-orm/core";
 import { SqlHighlighter } from "@mikro-orm/sql-highlighter";
+import dotenv from "dotenv";
+
+dotenv.config();
+export const sqlName = process.env.dbName;
+
+export const urlSQL = process.env.urlSQL;
 
 export const orm = await MikroORM.init({
   entities: ["dist/**/*.entity.js"],
   entitiesTs: ["src/**/*.entity.ts"],
-  dbName: "backenddsw",
+  dbName: `${sqlName}`,
   type: "mysql",
-  clientUrl: "mysql://tpdsw:tpdsw@localhost:3306/",
+  clientUrl: `${urlSQL}`,
   highlighter: new SqlHighlighter(),
   debug: true,
 
