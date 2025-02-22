@@ -16,6 +16,7 @@ import { suggestionRouter } from "./suggestions/suggestion.routes.js";
 import { adminRouter } from "./admin/admin.routes.js";
 import { initDb } from "./shared/db/initDb.js";
 import { mpRouter } from "./payment/mp.routes.js";
+import { port } from "../config.js";
 
 const app = express();
 app.use(express.json());
@@ -68,8 +69,8 @@ await syncSchema(); // solo en dev, NO SE DEBE USAR EN PRODUCCION
 //inicializado de la bd
 await initDb();
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000 http://localhost:3000/");
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 app.use((_, res) => {
