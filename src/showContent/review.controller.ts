@@ -34,7 +34,12 @@ async function addOneReview(req: Request, res: Response) {
       return res.status(500).json({ message: "Error with Perspective API" });
     }
     if (toxicityScore > 0.7) {
-      return res.status(200).json({ message: "Toxicity detected" , data: {desc: req.body.description, rating: req.body.rating}});
+      return res
+        .status(200)
+        .json({
+          message: "Toxicity detected",
+          data: { desc: req.body.description, rating: req.body.rating },
+        });
     } else {
       if (content != null) {
         const newReview = em.create(Review, {
@@ -106,7 +111,13 @@ async function getContentReviews(req: Request, res: Response) {
     const reviews = await em.find(
       Review,
       { showReviewd: content },
-      { populate: ["reviewOwner", "comments.commentReview.reviewOwner"] }
+      {
+        populate: [
+          "reviewOwner",
+          "comments.commentReview.reviewOwner",
+          "comments.commentOwner",
+        ],
+      }
     );
     res.status(200).json({ message: "Reviews found", data: reviews });
   } catch (error: any) {
@@ -127,7 +138,12 @@ async function editReview(req: Request, res: Response) {
       return;
     }
     if (toxicityScore > 0.7) {
-      res.status(200).json({ message: "Toxicity detected" , data: {desc: req.body.description, rating: req.body.rating}});
+      res
+        .status(200)
+        .json({
+          message: "Toxicity detected",
+          data: { desc: req.body.description, rating: req.body.rating },
+        });
       return;
     } else {
       review.rating = req.body.rating;
