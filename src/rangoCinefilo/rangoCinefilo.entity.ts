@@ -10,7 +10,7 @@ import { BaseEntity } from "../shared/db/baseEntity.entity.js";
 
 @Entity()
 export class RangoCinefilo extends BaseEntity {
-  @Property({ nullable: false, unique: true })
+  @Property({ nullable: false, unique: false })
   nameRango!: string;
 
   @Property({ nullable: false })
